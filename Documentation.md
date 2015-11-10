@@ -20,6 +20,23 @@ TEvo Harvester utilizes the [DotEnv](https://github.com/vlucas/phpdotenv) PHP li
 
 Modify your environment variables in this `.env` file as needed for your own local server, as well as your production environment. However, your `.env` file should not be committed to your application’s source control.
 
+#### Run Database Migrations
+Migrations are included to create any necessary tables. From the command line run
+
+```bash
+$ php artisan migrate
+```
+
+#### Create a User
+If you wish to use the web based functionality you need to create a User. To do so first uncomment the registration routes in `app/Http/routes.php`.
+
+```php
+Route::get('auth/register', 'Auth\AuthController@getRegister');
+Route::post('auth/register', 'Auth\AuthController@postRegister');
+```
+
+Using your browser go to `/auth/register` and create a User. Once completed you should re-comment those lines to prevent others from registering.
+
 ## Running Updates
 Updates of the API information can be run either via the Dashboard or via command line using the [artisan console](http://laravel.com/docs/artisan) with a command such as 
 
