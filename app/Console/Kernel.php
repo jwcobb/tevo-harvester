@@ -36,38 +36,30 @@ class Kernel extends ConsoleKernel
             $harvests = Harvest::all();
 
             foreach ($harvests as $harvest) {
+                $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
+                    ->{$harvest->scheduler_frequency_method}()
+                    ->withoutOverlapping();
+
                 /**
-                 * Things will fail silently if you send a null value to pingBefore() or thenPing()
-                 * so unfortunately we need to check if either or both of the variables to be used
-                 * as the URL are null and adjust the command accordingly.
+                 * Both ping_before_url and then_ping_url could be NULL
+                 * in the database but things will fail silently if NULL
+                 * is passed to pingBefore() or thenPing().
                  *
-                 * We are still assuming that if there is a value that it is both valid and GET-able.
+                 * We are still assuming that if there is a value that it
+                 * is both valid and GET-able, which could also cause
+                 * a silent failure.
                  */
-                if ($harvest->ping_before_url === null && $harvest->then_ping_url === null) {
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
-                        ->{$harvest->scheduler_frequency_method}()
-                        ->withoutOverlapping();
+                if ($harvest->ping_before_url !== null) {
+                    $schedule->pingBefore($harvest->ping_before_url);
                 }
 
-                if ($harvest->ping_before_url === null && $harvest->then_ping_url !== null) {
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
-                        ->{$harvest->scheduler_frequency_method}()
-                        ->withoutOverlapping()
-                        ->thenPing($harvest->then_ping_url);
+                if ($harvest->then_ping_url !== null) {
+                    $schedule->thenPing($harvest->then_ping_url);
                 }
-
-                if ($harvest->ping_before_url !== null && $harvest->then_ping_url === null) {
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
-                        ->{$harvest->scheduler_frequency_method}()
-                        ->withoutOverlapping()
-                        ->pingBefore($harvest->ping_before_url)
-                        ->thenPing($harvest->then_ping_url);
-                }
-
             }
         } catch (\Exception $e) {
             // Hopefully we’re only here because we are migrating,
-            // which doesn't like the database query above.
+            // which doesn’t like the database query above.
         }
 
     }
