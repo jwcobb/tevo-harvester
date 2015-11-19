@@ -10,7 +10,7 @@
         <div class="form-group">
             {!! Form::label('name', 'Your Name', array('class' => 'col-sm-2 control-label')) !!}
             <div class="col-sm-4">
-                {!! Form::email('name', old('name'), ['class' => 'form-control', 'id' => 'name']) !!}
+                {!! Form::text('name', old('name'), ['class' => 'form-control', 'id' => 'name']) !!}
             </div>
         </div>
     </div>
