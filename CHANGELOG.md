@@ -1,5 +1,8 @@
 # TEvo Harvester Changelog
 
+## 1.0.3 (November 18, 2015)
+- Improve handling and validation of `pingBefore()` and `thenPing()` in Scheduler tasks.
+
 ## 1.0.2 (November 18, 2015)
 - Fix #2 by correcting input type of Name field in register form
 
