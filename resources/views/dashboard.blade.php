@@ -43,20 +43,8 @@
                            href="/resources/{{ mb_strtolower($action['resource']) . '/' . mb_strtolower($action['action']) . '/edit' }}"><span class="glyphicon glyphicon-edit"></span>&nbsp;Edit Properties</a>
                     </td>
                     <td>
-                        <div class="btn-group">
-                            <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span
-                                        class="glyphicon glyphicon-tasks icon-white"></span>&nbsp;Run Now&nbsp;<span
-                                        class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="/resources/{{ mb_strtolower($action['resource'] . '/' . $action['action'] . '/harvest') }}"><span class="glyphicon glyphicon-refresh"></span>&nbsp;Normal</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="/resources/{{ mb_strtolower($action['resource'] . '/' . $action['action'] . '/refresh') }}"><span class="glyphicon glyphicon-repeat"></span>&nbsp;Full Refresh</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <a class="btn btn-primary" href="/resources/{{ mb_strtolower($action['resource'] . '/' . $action['action'] . '/harvest') }}"><span class="glyphicon glyphicon-refresh"></span>&nbsp;Update</a>
+                        <a class="btn btn-warning" href="/resources/{{ mb_strtolower($action['resource'] . '/' . $action['action'] . '/refresh') }}"><span class="glyphicon glyphicon-repeat"></span>&nbsp;Refresh</a>
                     </td>
                 </tr>
             @endforeach

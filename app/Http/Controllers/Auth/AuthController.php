@@ -23,24 +23,27 @@ class AuthController extends Controller
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
-    protected $redirectPath = '/dashboard';
-
+    /**
+     * Where to redirect users after login / registration.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/dashboard';
 
     /**
      * Create a new authentication controller instance.
      *
+     * @return void
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('guest', ['except' => 'logout']);
     }
-
 
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array $data
-     *
+     * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -52,19 +55,17 @@ class AuthController extends Controller
         ]);
     }
 
-
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array $data
-     *
+     * @param  array  $data
      * @return User
      */
     protected function create(array $data)
     {
         return User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
     }
