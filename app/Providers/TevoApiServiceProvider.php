@@ -22,7 +22,7 @@ class TevoApiServiceProvider extends TEvoServiceProvider
      */
     public function register()
     {
-        $this->app->bindShared('tevo', function () {
+        $this->app->singleton('tevo', function () {
 
             // Setup Logger
             $log = Log::getMonolog();

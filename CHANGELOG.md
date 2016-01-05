@@ -1,5 +1,8 @@
 # TEvo Harvester Changelog
 
+## 1.1 (January 5, 2015)
+- Upgrade to Laravel 5.2
+
 ## 1.0.4 (November 18, 2015)
 - Fix validation of `pingBefore()` and `thenPing()` in Scheduler tasks.
 

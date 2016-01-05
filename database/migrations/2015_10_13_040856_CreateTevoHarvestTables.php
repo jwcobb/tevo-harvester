@@ -295,36 +295,6 @@ class CreateTevoHarvestTables extends Migration
         });
 
 
-//        Schema::create('tevo_users', function (Blueprint $table) {
-//            $table->engine = 'MyISAM';
-//
-//            $table->mediumInteger('id', false, true);
-//            $table->smallInteger('brokerage_id', false, true)->index();
-//            $table->foreign('brokerage_id')->references('id')
-//                ->on('brokerages')
-//                ->onDelete('cascade')
-//                ->onUpdate('cascade');
-//            $table->smallInteger('office_id', false, true)->index();
-//            $table->foreign('office_id')->references('id')
-//                ->on('offices')
-//                ->onDelete('cascade')
-//                ->onUpdate('cascade');
-//
-//            $table->string('name', 191)->index();
-//            $table->string('phone', 30)->nullable()->default(null);
-//            $table->string('phone_extension', 10)->nullable()->default(null);
-//            $table->string('email_address', 191);
-//
-//            $table->string('url', 191);
-//            $table->timestamp('tevo_created_at')->nullable()->default(null);
-//            $table->timestamp('tevo_updated_at')->nullable()->default(null);
-//            $table->timestamp('tevo_deleted_at')->nullable()->default(null);
-//            $table->timestamps();
-//            $table->softDeletes();
-//        });
-//        DB::statement('ALTER TABLE tevo_users ADD FULLTEXT search(name, email_address)');
-
-
         Schema::create('harvests', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
@@ -351,6 +321,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'categories',
@@ -361,6 +333,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'categories',
@@ -371,6 +345,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'configurations',
@@ -381,6 +357,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'events',
@@ -391,6 +369,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'events',
@@ -401,6 +381,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'offices',
@@ -411,6 +393,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'performers',
@@ -421,6 +405,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'performers',
@@ -431,6 +417,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'performers',
@@ -441,17 +429,9 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
-//            [
-//                'resource'         => 'users',
-//                'action'           => 'active',
-//                'library_method'   => 'listUsers',
-//                'model_class'      => User::class,
-//                'scheduler_frequency_method' => 'daily',
-//                'ping_before_url'  => null,
-//                'then_ping_url'    => null,
-//                'last_run_at'      => null,
-//            ],
             [
                 'resource'                   => 'venues',
                 'action'                     => 'active',
@@ -461,6 +441,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
             [
                 'resource'                   => 'venues',
@@ -471,6 +453,8 @@ class CreateTevoHarvestTables extends Migration
                 'ping_before_url'            => null,
                 'then_ping_url'              => null,
                 'last_run_at'                => null,
+                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
         ]);
 

@@ -1,5 +1,0 @@
-suites:
-    main:
-        namespace: TevoHarvester
-        psr4_prefix: TevoHarvester
-        src_path: app

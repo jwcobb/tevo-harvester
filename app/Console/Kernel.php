@@ -70,8 +70,8 @@ class Kernel extends ConsoleKernel
                 }
             }
         } catch (\Exception $e) {
-            // Hopefully we’re only here because we are migrating,
-            // which doesn’t like the database query above.
+            // Hopefully we are only here because we are migrating,
+            // which does not like the database query above.
         }
 
     }
