@@ -1,54 +1,82 @@
 @extends('layouts.app')
 
-@section('page-title', 'Login | TEvo Harvester for Ticket Evolution API')
 @section('content')
-    @include('common.messages')
-
-    {!! Form::open(['action' => 'Auth\AuthController@postRegister', 'class' => 'form-horizontal']) !!}
-
+<div class="container">
     <div class="row">
-        <div class="form-group">
-            {!! Form::label('name', 'Your Name', array('class' => 'col-sm-2 control-label')) !!}
-            <div class="col-sm-4">
-                {!! Form::text('name', old('name'), ['class' => 'form-control', 'id' => 'name']) !!}
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">Register</div>
+                <div class="panel-body">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ url('/register') }}">
+                        {!! csrf_field() !!}
+
+                        <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">
+                            <label class="col-md-4 control-label">Name</label>
+
+                            <div class="col-md-6">
+                                <input type="text" class="form-control" name="name" value="{{ old('name') }}">
+
+                                @if ($errors->has('name'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('name') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                            <label class="col-md-4 control-label">E-Mail Address</label>
+
+                            <div class="col-md-6">
+                                <input type="email" class="form-control" name="email" value="{{ old('email') }}">
+
+                                @if ($errors->has('email'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('email') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                            <label class="col-md-4 control-label">Password</label>
+
+                            <div class="col-md-6">
+                                <input type="password" class="form-control" name="password">
+
+                                @if ($errors->has('password'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('password') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
+                            <label class="col-md-4 control-label">Confirm Password</label>
+
+                            <div class="col-md-6">
+                                <input type="password" class="form-control" name="password_confirmation">
+
+                                @if ($errors->has('password_confirmation'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('password_confirmation') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-6 col-md-offset-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="glyphicon glyphicon-user"></i>&nbsp;Register
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="form-group">
-            {!! Form::label('email', 'Email', array('class' => 'col-sm-2 control-label')) !!}
-            <div class="col-sm-4">
-                {!! Form::email('email', old('email'), ['class' => 'form-control', 'id' => 'email']) !!}
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="form-group">
-            {!! Form::label('password', 'Password', array('class' => 'col-sm-2 control-label')) !!}
-            <div class="col-sm-4">
-                {!! Form::password('password', ['class' => 'form-control', 'id' => 'password']) !!}
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="form-group">
-            {!! Form::label('password_confirmation', 'Password Confirmation', array('class' => 'col-sm-2 control-label')) !!}
-            <div class="col-sm-4">
-                {!! Form::password('password_confirmation', ['class' => 'form-control', 'id' => 'password_confirmation']) !!}
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="form-group">
-            <div class="col-sm-4 col-md-offset-2">
-                <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-user"></span>&nbsp;Register</button>
-            </div>
-        </div>
-    </div>
-
-    {!! Form::close() !!}
+</div>
 @endsection
