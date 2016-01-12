@@ -1,5 +1,9 @@
 # TEvo Harvester Changelog
 
+## 1.1.1 (January 11, 2015)
+- Fixed #7 by adding migration to correct the harvests for deleted items where the `library_method`  was not using the right method. This has been broken since 1.0.0.
+- Removed erroneous comment in `DashboardController`
+
 ## 1.1 (January 5, 2015)
 - Upgrade to Laravel 5.2
 
