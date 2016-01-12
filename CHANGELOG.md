@@ -1,5 +1,9 @@
 # TEvo Harvester Changelog
 
+## 1.1.2 (January 12, 2015)
+- Fix authentication by properly switching to Laravel 5.2 Auth system.
+- Added `.env` variable `ALLOW_REGISTRATION` to define whether or not registration is allowed.
+
 ## 1.1.1 (January 11, 2015)
 - Fixed #7 by adding migration to correct the harvests for deleted items where the `library_method`  was not using the right method. This has been broken since 1.0.0.
 - Removed erroneous comment in `DashboardController`

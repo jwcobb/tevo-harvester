@@ -43,17 +43,19 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('resources/{resource}/{action}/edit', 'ResourceController@store');
 
 
-    // Authentication routes...
-    Route::get('auth/login', 'Auth\AuthController@getLogin');
-    Route::post('auth/login', 'Auth\AuthController@postLogin');
-    Route::get('auth/logout', 'Auth\AuthController@getLogout');
+    // Authentication Routes...
+    $this->get('login', 'Auth\AuthController@showLoginForm');
+    $this->post('login', 'Auth\AuthController@login');
+    $this->get('logout', 'Auth\AuthController@logout');
 
-    /**
-     * Registration routes...
-     *
-     * Un-comment these to create a user
-     * then you should re-comment them to prevent others from signing up
-     */
-    //Route::get('auth/register', 'Auth\AuthController@getRegister');
-    //Route::post('auth/register', 'Auth\AuthController@postRegister');
+    // Registration Routes...
+    if (env('ALLOW_REGISTRATION', false)) {
+        $this->get('register', 'Auth\AuthController@showRegistrationForm');
+        $this->post('register', 'Auth\AuthController@register');
+    }
+
+    // Password Reset Routes...
+    $this->get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
+    $this->post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
+    $this->post('password/reset', 'Auth\PasswordController@reset');
 });

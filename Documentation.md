@@ -2,7 +2,7 @@
 
 ## Installation
 ### Server Requirements
-This project is based on Laravel 5.1 and therefore shares the same [server requirements](http://laravel.com/docs/5.1#installation) plus the additional requirement of a MySQL-like database such as [Percona Server](https://www.percona.com/software/mysql-database/percona-server), [MariaDB](https://mariadb.org/), [Amazon Aurora](https://aws.amazon.com/rds/aurora/), or [MySQL](https://www.mysql.com/products/). Versions equivalent to MySQL 5.6 or higher are recommended.
+This project is based on Laravel 5.2 and therefore shares the same [server requirements](https://laravel.com/docs/5.2#installation) plus the additional requirement of a MySQL-like database such as [Percona Server](https://www.percona.com/software/mysql-database/percona-server), [MariaDB](https://mariadb.org/), [Amazon Aurora](https://aws.amazon.com/rds/aurora/), or [MySQL](https://www.mysql.com/products/). Versions equivalent to MySQL 5.6 or higher are recommended.
 
 ### Installing TEvo Harvester
 Like almost all modern PHP software, TEvo Harvester utilizes [Composer](http://getcomposer.org/) to manage its dependencies. So, before using TEvo Harvester, make sure you have Composer installed on your machine.
@@ -28,24 +28,18 @@ $ php artisan migrate
 ```
 
 #### Create a User
-If you wish to use the web based functionality you need to create a User. To do so first uncomment the registration routes in `app/Http/routes.php`.
+If you wish to use the web based functionality you need to create a User. To do so first ensure `ALLOW_REGISTRATION` is set to `true` in `.env`.
 
-```php
-Route::get('auth/register', 'Auth\AuthController@getRegister');
-Route::post('auth/register', 'Auth\AuthController@postRegister');
-```
-
-Using your browser go to `/auth/register` and create a User. Once completed you should re-comment those lines to prevent others from registering.
+Using your browser go to `/register` and create a User. Once completed you should set `ALLOW_REGISTRATION` back to `false` to prevent others from registering.
 
 ## Running Updates
-Updates of the API information can be run either via the Dashboard or via command line using the [artisan console](http://laravel.com/docs/artisan) with a command such as 
+Updates of the API information can be run either via the Dashboard or via command line using the [artisan console](https://laravel.com/docs/5.2/artisan) with a command such as 
 
 ```php
 $ php artisan harvester:update performers --action=active
 ```
 
 ### Scheduling Updates
-You can use the [Laravel Scheduler](http://laravel.com/docs/5.1/scheduling) to run these commands automatically at preset times. Just be sure to [add the Laravel Scheduler to your `crontab`](http://laravel.com/docs/5.1/scheduling#introduction).
+You can use the [Laravel Scheduler](https://laravel.com/docs/5.2/scheduling) to run these commands automatically at preset times. Just be sure to [add the Laravel Scheduler to your `crontab`](http://laravel.com/docs/5.1/scheduling#introduction).
 
 Each Harvest already has a suggested update interval assigned to it, but using the Dashboard you can edit the schedule and even include URLs to ping before and after updates in case you wish to use a [Dead Man’s Switch](https://en.wikipedia.org/wiki/Dead_man%27s_switch) such as [Pushmon](http://www.pushmon.com/) or [Dead Man’s Snitch](https://deadmanssnitch.com/) to ensure your updates are running as desired.
-
