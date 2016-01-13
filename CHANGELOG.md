@@ -1,5 +1,8 @@
 # TEvo Harvester Changelog
 
+## 1.1.3 (January 12, 2015)
+- Fix page titles
+
 ## 1.1.2 (January 12, 2015)
 - Fix authentication by properly switching to Laravel 5.2 Auth system.
 - Added `.env` variable `ALLOW_REGISTRATION` to define whether or not registration is allowed.
