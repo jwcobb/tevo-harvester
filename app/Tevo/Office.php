@@ -180,7 +180,10 @@ class Office extends Model
              * Get all of the already associated email addresses and
              * delete() any that are no longer active.
              */
-            $activeEmailAddresses = $result['email'];
+            $activeEmailAddresses = [];
+            if (!empty($result['email'])) {
+                $activeEmailAddresses = $result['email'];
+            }
 
             foreach ($office->emailAddresses() as $emailAddress) {
                 if (!in_array($emailAddress->email_address, $activeEmailAddresses)) {
