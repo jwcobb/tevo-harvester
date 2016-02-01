@@ -1,5 +1,8 @@
 # TEvo Harvester Changelog
 
+## 1.1.4 (February 1, 2015)
+- Fix for offices with no email addresses
+
 ## 1.1.3 (January 12, 2015)
 - Fix page titles
 
