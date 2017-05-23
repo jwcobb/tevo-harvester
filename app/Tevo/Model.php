@@ -1,12 +1,27 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
+use Carbon\Carbon;
+use Iatstuti\Database\Support\NullableFields;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
+
 class Model extends BaseModel
 {
-    use SoftDeletes;
+    use SoftDeletes, NullableFields;
+
+    /**
+     * The attributes that are not mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
 
     /**
      * The attributes that should be mutated to dates.
@@ -31,6 +46,60 @@ class Model extends BaseModel
 
 
     /**
+     * Mutate the $result as necessary.
+     * Shared mutations go here as is generally called by
+     * mutateApiResult() method on the Models.
+     *
+     * @param array $result
+     *
+     * @return array
+     */
+    protected static function mutateApiResult(array $result): array
+    {
+        $result = self::mutateDatesToTevoDates($result);
+
+        return $result;
+    }
+
+
+    /**
+     * Mutate the TEvo timestamps so they do not overwrite our own.
+     *
+     * @param array $result
+     *
+     * @return array
+     */
+    protected static function mutateDatesToTevoDates(array $result): array
+    {
+        if (array_key_exists('created_at', $result)) {
+            $result['tevo_created_at'] = new Carbon($result['created_at']);
+            unset($result['created_at']);
+        }
+        if (array_key_exists('updated_at', $result)) {
+            $result['tevo_updated_at'] = new Carbon($result['updated_at']);
+            unset($result['updated_at']);
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Any operations that need to be run after save()
+     * such as saving related Models can go here.
+     *
+     * @param Model $item
+     * @param array $result
+     *
+     * @return Model
+     */
+    protected static function postSave(Model $item, array $result): Model
+    {
+        return $item;
+    }
+
+
+    /**
      * This allows us to save an item before deleting. It copies the
      * save() process including performUpdate() or performInsert()
      * so that we can do either of those without firing the associated
@@ -43,6 +112,8 @@ class Model extends BaseModel
      * it is possible to receive the item as deleted even though it
      * was never previously saved. If the item did not exist and was not
      * saved before deleting there would be no record of that item.
+     *
+     * @param array $options
      *
      * @return bool|null
      */
@@ -155,12 +226,15 @@ class Model extends BaseModel
         return new static;
     }
 
+
     /**
      * Scope a query to only include active items.
      *
+     * @param $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeActive($query)
+    public function scopeActive($query): Builder
     {
         return $query->where('deleted_at', null);
     }

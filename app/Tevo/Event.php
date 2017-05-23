@@ -1,12 +1,13 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
+use App\Events\ItemWasStored;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Event as EventFacade;
-use TevoHarvester\Events\ItemWasDeleted;
-use TevoHarvester\Events\ItemWasStored;
 
 class Event extends Model
 {
+    use StoresFromApi;
+
     /**
      * The database table used by the model.
      *
@@ -37,6 +38,7 @@ class Event extends Model
         'id',
         'name',
         'occurs_at',
+        'occurs_at_local',
         'venue_id',
         'configuration_id',
         'category_id',
@@ -55,167 +57,92 @@ class Event extends Model
         'tevo_deleted_at',
     ];
 
+
     /**
-     * The attributes that should be mutated to dates.
+     * The attributes that may be NULL.
      *
      * @var array
      */
-    protected $dates = [
-        'occurs_at',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $nullable = [
+        'notes',
+        'stubhub_id',
     ];
 
+
     /**
-     * The attributes excluded from the model’s JSON form.
+     * Mutate the $result as necessary.
+     * Be sure to run the parent::mutateApiResult() to get the common mutations.
      *
-     * @var array
+     * @param array $result
+     *
+     * @return array
      */
-    protected $hidden = [];
-
-
-    /**
-     * Take a result item from a Ticket Evolution API request,
-     * massage it into form and save() it, thus INSERTing or UPDATEing
-     * it as necessary.
-     */
-    public static function storeFromApi($result)
+    protected static function mutateApiResult(array $result): array
     {
-        $event = static::findOrNewWithTrashed($result['id']);
-        $event->id = $result['id'];
-
-        if (array_key_exists('name', $result)) {
-            $event->name = $result['name'];
-        }
-
-        if (array_key_exists('available_count', $result)) {
-            $event->available_count = (int)$result['available_count'];
-        }
-
-        if (array_key_exists('products_count', $result)) {
-            $event->products_count = (int)$result['products_count'];
-        }
-
-        if (array_key_exists('products_eticket_count', $result)) {
-            $event->products_eticket_count = (int)$result['products_eticket_count'];
-        }
-
-        if (isset($result['category']['id'])) {
-            $event->category_id = $result['category']['id'];
-        }
-
-        if (isset($result['configuration']['id'])) {
-            $event->configuration_id = $result['configuration']['id'];
-        }
-
-        if (isset($result['venue']['id'])) {
-            $event->venue_id = $result['venue']['id'];
-        }
-
-        if (array_key_exists('long_term_popularity_score', $result)) {
-            $event->long_term_popularity_score = (float)$result['long_term_popularity_score'];
-        }
-
-        if (array_key_exists('short_term_popularity_score', $result)) {
-            $event->short_term_popularity_score = (float)$result['short_term_popularity_score'];
-        }
-
-        if (array_key_exists('popularity_score', $result)) {
-            $event->popularity_score = (float)$result['popularity_score'];
-        }
-
-        if (array_key_exists('notes', $result)) {
-            $event->notes = $result['notes'];
-        }
-
-        if (array_key_exists('occurs_at', $result)) {
-            $event->occurs_at = new Carbon($result['occurs_at']);
-        }
-
-        if (array_key_exists('state', $result)) {
-            $event->state = $result['state'];
-        }
-
-        if (array_key_exists('stubhub_id', $result)) {
-            $event->stubhub_id = $result['stubhub_id'];
-        }
-
-
-        if (array_key_exists('url', $result)) {
-            $event->url = $result['url'];
-        }
-
-        if (array_key_exists('created_at', $result)) {
-            $event->tevo_created_at = new Carbon($result['created_at']);
-        }
-        if (array_key_exists('updated_at', $result)) {
-            $event->tevo_updated_at = new Carbon($result['updated_at']);
-        }
-        if (array_key_exists('deleted_at', $result)) {
-            $event->tevo_deleted_at = new Carbon($result['deleted_at']);
-        }
+        // Be sure to call the parent version for common mutations
+        $result = parent::mutateApiResult($result);
 
         /**
-         * If we have a deleted_at value then we are deleting the item
-         * but we need to ensure that we save() it first to record some
-         * data and to ensure it actually even exists. We do this via
-         * the saveThenDelete() method which does not trigger any of the
-         * saving events (but it does trigger the deleting events).
+         * Add custom mutations for this item type here
          */
-        if (!empty($result['deleted_at'])) {
-            $event->saveThenDelete();
+        $result['occurs_at'] = rtrim($result['occurs_at'], 'Z');
+        $result['occurs_at_local'] = Carbon::parse($result['occurs_at_local']);
 
-            // Fire an event that it was deleted
-            EventFacade::fire(new ItemWasDeleted($event));
-        } else {
-            if ($event->save()) {
-                // Fire an event if an INSERT or UPDATE was actually performed
-                // But NOT if we are deleting.
-                EventFacade::fire(new ItemWasStored($event));
+        $result['configuration_id'] = $result['configuration']['id'] ?? null;
+        unset($result['configuration']);
+
+        $result['category_id'] = $result['category']['id'] ?? null;
+        unset($result['category']);
+
+        $result['venue_id'] = $result['venue']['id'];
+        unset($result['venue']);
+
+        return $result;
+    }
+
+
+    /**
+     * Any operations that need to be run after save()
+     * such as saving related Models can go here.
+     *
+     * @param Model $event
+     * @param array $result
+     *
+     * @return Model
+     */
+    protected static function postSave(Model $event, array $result): Model
+    {
+        // Delete all existing performances for this event and we will
+        // restore/add performances as necessary below.
+        $event->performances()->delete();
+        
+        foreach ($result['performances'] as $resultPerformance) {
+            $performance = Performance::withTrashed()
+                ->where('event_id', $result['id'])
+                ->where('performer_id', $resultPerformance['performer']['id'])
+                ->first();
+
+            if (empty($performance)) {
+                $performance = new Performance([
+                    'event_id'     => $result['id'],
+                    'performer_id' => $resultPerformance['performer']['id'],
+                ]);
             }
 
+            $performance->fill([
+                'primary'    => $resultPerformance['primary'],
+                'event_name' => $event->name,
+                'occurs_at'  => Carbon::parse($event->occurs_at)->toDateTimeString(),
+                'venue_id'   => $event->venue_id,
+            ]);
 
-            // Delete all existing performances for this event and we will
-            // restore/add performances as necessary below.
-            $event->performances()->delete();
+            $performance->{$performance->getDeletedAtColumn()} = null;
 
-            foreach ($result['performances'] as $resultPerformance) {
-                $performance = Performance::withTrashed()
-                    ->where('event_id', $result['id'])
-                    ->where('performer_id', $resultPerformance['performer']['id'])
-                    ->first();
-
-                if (empty($performance)) {
-                    $performance = new Performance();
-                    $performance->event_id = $result['id'];
-                    $performance->performer_id = $resultPerformance['performer']['id'];
-                }
-
-                $performance->primary = $resultPerformance['primary'];
-
-                if (array_key_exists('name', $result)) {
-                    $performance->event_name = $result['name'];
-                }
-
-                if (array_key_exists('occurs_at', $result)) {
-                    $performance->occurs_at = new Carbon($result['occurs_at']);
-                }
-
-                if (isset($result['venue']['id'])) {
-                    $performance->venue_id = $result['venue']['id'];
-                }
-
-                $performance->{$performance->getDeletedAtColumn()} = null;
-                if ($performance->save()) {
-                    EventFacade::fire(new ItemWasStored($performance));
-                }
+            if ($performance->save()) {
+                EventFacade::fire(new ItemWasStored($performance));
             }
-            unset($performance);
         }
+        unset($performance);
 
         return $event;
     }

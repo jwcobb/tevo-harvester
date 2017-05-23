@@ -1,10 +1,10 @@
 <?php
 
-namespace TevoHarvester\Console;
+namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use TevoHarvester\Tevo\Harvest;
+use App\Tevo\Harvest;
 
 class Kernel extends ConsoleKernel
 {
@@ -14,9 +14,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \TevoHarvester\Console\Commands\ShowHarvesterStatusCommand::class,
-        \TevoHarvester\Console\Commands\UpdateResourceCommand::class,
-        \TevoHarvester\Console\Commands\RefreshResourceCommand::class,
+        \App\Console\Commands\ShowHarvesterStatusCommand::class,
+        \App\Console\Commands\UpdateResourceCommand::class,
+        \App\Console\Commands\RefreshResourceCommand::class,
     ];
 
 
@@ -74,6 +74,7 @@ class Kernel extends ConsoleKernel
             // which does not like the database query above.
         }
     }
+
     /**
      * Register the Closure based commands for the application.
      *

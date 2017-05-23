@@ -13,7 +13,8 @@
         "ticketevolution/ticketevolution-php": "^3.0",
         "monolog/monolog": "^1.17",
         "guzzlehttp/log-subscriber": "^1.0",
-        "laravelcollective/html": "5.3.*"
+        "laravelcollective/html": "5.3.*",
+        "iatstuti/laravel-nullable-fields": "^1.4"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -29,7 +30,7 @@
             "database"
         ],
         "psr-4": {
-            "TevoHarvester\\": "app/"
+            "App\\": "app/"
         }
     },
     "autoload-dev": {
@@ -46,8 +47,9 @@
             "php artisan clear-compiled"
         ],
         "post-update-cmd": [
-            "php artisan clear-compiled",
+            "Illuminate\\Foundation\\ComposerScripts::postUpdate",
             "php artisan ide-helper:generate",
+            "php artisan ide-helper:meta",
             "php artisan optimize"
         ],
         "post-root-package-install": [

@@ -1,4 +1,4 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
 class OfficeEmailAddress extends Model
 {
@@ -51,13 +51,6 @@ class OfficeEmailAddress extends Model
         'updated_at',
         'deleted_at',
     ];
-
-    /**
-     * The attributes excluded from the model’s JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [];
 
 
     /**

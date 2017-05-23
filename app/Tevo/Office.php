@@ -1,12 +1,13 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
+use App\Events\ItemWasDeleted;
+use App\Events\ItemWasStored;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Event as EventFacade;
-use TevoHarvester\Events\ItemWasDeleted;
-use TevoHarvester\Events\ItemWasStored;
 
 class Office extends Model
 {
+    use StoresFromApi;
 
     /**
      * The database table used by the model.
@@ -54,10 +55,12 @@ class Office extends Model
         'pos',
         'evopay_discount',
         'url',
+        'fedex_pickup_dropoff_time',
         'tevo_created_at',
         'tevo_updated_at',
         'tevo_deleted_at',
     ];
+
 
     /**
      * The attributes that should be mutated to dates.
@@ -65,6 +68,7 @@ class Office extends Model
      * @var array
      */
     protected $dates = [
+        'fedex_pickup_dropoff_time',
         'tevo_created_at',
         'tevo_updated_at',
         'tevo_deleted_at',
@@ -73,184 +77,153 @@ class Office extends Model
         'deleted_at',
     ];
 
+
     /**
-     * The attributes excluded from the model’s JSON form.
+     * The attributes that may be NULL.
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $nullable = [
+        'street_address',
+        'extended_address',
+        'locality',
+        'region',
+        'postal_code',
+        'country_code',
+        'latitude',
+        'longitude',
+        'phone',
+        'fax',
+        'timezone',
+    ];
 
 
     /**
-     * Take a result item from a Ticket Evolution API request,
-     * massage it into form and save() it, thus INSERTing or UPDATEing
-     * it as necessary.
+     * Mutate the $result as necessary.
+     * Be sure to run the parent::mutateApiResult() to get the common mutations.
+     *
+     * @param array $result
+     *
+     * @return array
      */
-    public static function storeFromApi($result)
+    protected static function mutateApiResult(array $result): array
     {
-        $office = static::findOrNewWithTrashed($result['id']);
-        $office->id = $result['id'];
+        // Be sure to call the parent version for common mutations
+        $result = parent::mutateApiResult($result);
 
-        if (isset($result['brokerage']['id'])) {
-            $office->brokerage_id = $result['brokerage']['id'];
-        }
 
-        if (array_key_exists('name', $result)) {
-            $office->name = $result['name'];
-        }
+        /**
+         * Add custom mutations for this item type here
+         */
+        $result['brokerage_id'] = $result['brokerage']['id'];
+        unset($result['brokerage']);
 
-        if (array_key_exists('main', $result)) {
-            $office->main = $result['main'];
-        }
+        $result['fedex_pickup_dropoff_time'] = Carbon::parse($result['fedex_pickup_dropoff_time'], 'UTC');
 
 
         if (isset($result['address'])) {
-            $office->street_address = $result['address']['street_address'];
-            $office->extended_address = $result['address']['extended_address'];
-            $office->locality = $result['address']['locality'];
-            $office->region = $result['address']['region'];
-            $office->postal_code = $result['address']['postal_code'];
-            $office->country_code = $result['address']['country_code'];
-            $office->po_box = $result['address']['po_box'];
-            $office->latitude = $result['address']['latitude'];
-            $office->longitude = $result['address']['longitude'];
+            $result['street_address'] = $result['address']['street_address'];
+            $result['extended_address'] = $result['address']['extended_address'];
+            $result['locality'] = $result['address']['locality'];
+            $result['region'] = $result['address']['region'];
+            $result['postal_code'] = $result['address']['postal_code'];
+            $result['country_code'] = $result['address']['country_code'];
+            $result['po_box'] = $result['address']['po_box'];
+            $result['latitude'] = $result['address']['latitude'];
+            $result['longitude'] = $result['address']['longitude'];
         }
+        unset($result['address']);
+
+        return $result;
+    }
 
 
-        if (array_key_exists('time_zone', $result)) {
-            $office->time_zone = $result['time_zone'];
+    /**
+     * Any operations that need to be run after save()
+     * such as saving related Models can go here.
+     *
+     * @param Model $office
+     * @param array $result
+     *
+     * @return Model
+     */
+    protected static function postSave(Model $office, array $result): Model
+    {
+        /**
+         * Get all of the already associated email addresses and
+         * delete() any that are no longer active.
+         */
+        $activeEmailAddresses = [];
+        if (!empty($result['email'])) {
+            $activeEmailAddresses = $result['email'];
         }
 
-        if (array_key_exists('phone', $result)) {
-            $office->phone = $result['phone'];
+        foreach ($office->emailAddresses() as $emailAddress) {
+            if (!in_array($emailAddress->email_address, $activeEmailAddresses)) {
+                // If it isn't in the array then it is no longer active, kill it.
+                if ($emailAddress->delete()) {
+                    EventFacade::fire(new ItemWasDeleted($emailAddress));
+                }
+            } else {
+                // Otherwise unset() it so that we're left with any
+                // $activeEmailAddresses that need to be created
+                unset($activeEmailAddresses['$emailAddress->email_address']);
+            }
         }
+        unset($emailAddress);
 
-        if (array_key_exists('fax', $result)) {
-            $office->fax = $result['fax'];
+        // Any addresses left in $activeEmailAddresses do not yet exist
+        // and need to be created.
+        foreach ($activeEmailAddresses as $email_address) {
+            if ($newEmailAddress = OfficeEmailAddress::firstOrCreate([
+                'office_id'     => $result['id'],
+                'email_address' => strtolower($email_address),
+            ])
+            ) {
+                EventFacade::fire(new ItemWasStored($newEmailAddress));
+            }
         }
+        unset($email_address);
 
-        if (array_key_exists('pos', $result)) {
-            $office->pos = $result['pos'];
-        }
-
-        if (array_key_exists('evopay', $result)) {
-            $office->evopay = $result['evopay'];
-        }
-
-        if (array_key_exists('evopay_discount', $result)) {
-            $office->evopay_discount = $result['evopay_discount'];
-        }
-
-        if (array_key_exists('url', $result)) {
-            $office->url = $result['url'];
-        }
-
-        if (array_key_exists('created_at', $result)) {
-            $office->tevo_created_at = new Carbon($result['created_at']);
-        }
-        if (array_key_exists('updated_at', $result)) {
-            $office->tevo_updated_at = new Carbon($result['updated_at']);
-        }
-        if (array_key_exists('deleted_at', $result)) {
-            $office->tevo_deleted_at = new Carbon($result['deleted_at']);
-        }
 
         /**
-         * If we have a deleted_at value then we are deleting the item
-         * but we need to ensure that we save() it first to record some
-         * data and to ensure it actually even exists. We do this via
-         * the saveThenDelete() method which does not trigger any of the
-         * saving events (but it does trigger the deleting events).
+         * Get all of the already associated hours and
+         * delete() any that are no longer active.
          */
-        if (!empty($result['deleted_at'])) {
-            $office->saveThenDelete();
+        $activeHours = $result['hours'];
 
-            // Fire an event that it was deleted
-            EventFacade::fire(new ItemWasDeleted($office));
-        } else {
-            if ($office->save()) {
-                // Fire an event if an INSERT or UPDATE was actually performed
-                // But NOT if we are deleting.
-                EventFacade::fire(new ItemWasStored($office));
-            }
-
-
-            /**
-             * Get all of the already associated email addresses and
-             * delete() any that are no longer active.
-             */
-            $activeEmailAddresses = [];
-            if (!empty($result['email'])) {
-                $activeEmailAddresses = $result['email'];
-            }
-
-            foreach ($office->emailAddresses() as $emailAddress) {
-                if (!in_array($emailAddress->email_address, $activeEmailAddresses)) {
-                    // If it isn't in the array then it is no longer active, kill it.
-                    if ($emailAddress->delete()) {
-                        EventFacade::fire(new ItemWasDeleted($emailAddress));
-                    }
-                } else {
-                    // Otherwise unset() it so that we're left with any
-                    // $activeEmailAddresses that need to be created
-                    unset($activeEmailAddresses['$emailAddress->email_address']);
+        foreach ($office->hours() as $hour) {
+            if (!in_array($hour->id, array_column($activeHours, 'id'))) {
+                // If it isn't in the array then it is no longer active, kill it.
+                if ($hour->delete()) {
+                    EventFacade::fire(new ItemWasDeleted($hour));
                 }
+            } else {
+                // Otherwise unset() it so that we're left with any
+                // $activeEmailAddresses that need to be created
+                unset($activeHours[array_search($hour->id, $activeHours)]);
             }
-            unset($emailAddress);
-
-            // Any addresses left in $activeEmailAddresses do not yet exist
-            // and need to be created.
-            foreach ($activeEmailAddresses as $email_address) {
-                if ($newEmailAddress = OfficeEmailAddress::firstOrCreate([
-                    'office_id'     => $result['id'],
-                    'email_address' => strtolower($email_address),
-                ])
-                ) {
-                    EventFacade::fire(new ItemWasStored($newEmailAddress));
-                }
-            }
-            unset($email_address);
-
-
-            /**
-             * Get all of the already associated hours and
-             * delete() any that are no longer active.
-             */
-            $activeHours = $result['hours'];
-
-            foreach ($office->hours() as $hour) {
-                if (!in_array($hour->id, array_column($activeHours, 'id'))) {
-                    // If it isn't in the array then it is no longer active, kill it.
-                    if ($hour->delete()) {
-                        EventFacade::fire(new ItemWasDeleted($hour));
-                    }
-                } else {
-                    // Otherwise unset() it so that we're left with any
-                    // $activeEmailAddresses that need to be created
-                    unset($activeHours[array_search($hour->id, $activeHours)]);
-                }
-            }
-            unset($hour);
-
-            // Any addresses left in $activeEmailAddresses do not yet exist
-            // and need to be created.
-            foreach ($activeHours as $operatingHours) {
-                foreach ($operatingHours as $hour) {
-                    $officeHour = OfficeHour::findOrNewWithTrashed($hour['id']);
-                    $officeHour->id = $hour['id'];
-                    $officeHour->office_id = $result['id'];
-                    $officeHour->day_of_week = $hour['day_of_week'];
-                    $officeHour->closed = $hour['closed'];
-                    $officeHour->open = Carbon::parse($hour['open'])->toTimeString();
-                    $officeHour->close = Carbon::parse($hour['close'])->toTimeString();
-
-                    if ($officeHour->save()) {
-                        EventFacade::fire(new ItemWasStored($officeHour));
-                    }
-                }
-            }
-            unset($hour);
         }
+        unset($hour);
+
+        // Any addresses left in $activeEmailAddresses do not yet exist
+        // and need to be created.
+        foreach ($activeHours as $operatingHours) {
+            foreach ($operatingHours as $hour) {
+                $officeHour = OfficeHour::findOrNewWithTrashed($hour['id']);
+                $officeHour->id = $hour['id'];
+                $officeHour->office_id = $result['id'];
+                $officeHour->day_of_week = $hour['day_of_week'];
+                $officeHour->closed = $hour['closed'];
+                $officeHour->open = Carbon::parse($hour['open'])->toTimeString();
+                $officeHour->close = Carbon::parse($hour['close'])->toTimeString();
+
+                if ($officeHour->save()) {
+                    EventFacade::fire(new ItemWasStored($officeHour));
+                }
+            }
+        }
+        unset($hour);
 
         return $office;
     }

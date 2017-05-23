@@ -1,6 +1,6 @@
 <?php
 
-namespace TevoHarvester\Providers;
+namespace App\Providers;
 
 use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Illuminate\Support\Facades\Log;

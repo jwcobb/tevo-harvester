@@ -1,10 +1,10 @@
 <?php
 
-namespace TevoHarvester\Console\Commands;
+namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use TevoHarvester\Tevo\Harvest;
+use App\Tevo\Harvest;
 
 class ShowHarvesterStatusCommand extends Command
 {

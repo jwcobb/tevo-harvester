@@ -1,12 +1,11 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Event as EventFacade;
-use TevoHarvester\Events\ItemWasDeleted;
-use TevoHarvester\Events\ItemWasStored;
 
 class Performer extends Model
 {
+    use StoresFromApi;
+
     /**
      * The database table used by the model.
      *
@@ -50,6 +49,7 @@ class Performer extends Model
         'tevo_deleted_at',
     ];
 
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -67,99 +67,46 @@ class Performer extends Model
     ];
 
     /**
-     * The attributes excluded from the model’s JSON form.
+     * The attributes that may be NULL.
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $nullable = [
+        'keywords',
+        'category_id',
+        'upcoming_event_first',
+        'upcoming_event_last',
+    ];
 
 
     /**
-     * Take a result item from a Ticket Evolution API request,
-     * massage it into form and save() it, thus INSERTing or UPDATEing
-     * it as necessary.
+     * Mutate the $result as necessary.
+     * Be sure to run the parent::mutateApiResult() to get the common mutations.
+     *
+     * @param array $result
+     *
+     * @return array
      */
-    public static function storeFromApi($result)
+    protected static function mutateApiResult(array $result): array
     {
-        $performer = static::findOrNewWithTrashed($result['id']);
-        $performer->id = $result['id'];
+        // Be sure to call the parent version for common mutations
+        $result = parent::mutateApiResult($result);
 
-        if (array_key_exists('name', $result)) {
-            $performer->name = $result['name'];
-        }
-
-        if (array_key_exists('slug_url', $result)) {
-            $performer->slug_url = $result['slug_url'];
-        }
-
-        if (array_key_exists('slug', $result)) {
-            $performer->slug = $result['slug'];
-        }
-
-        $performer->category_id = null;
-        if (!empty($result['category']['id'])) {
-            $performer->category_id = $result['category']['id'];
-        }
-
-        $performer->venue_id = null;
-        if (!empty($result['venue']['id'])) {
-            $performer->venue_id = $result['venue']['id'];
-        }
-
-        if (array_key_exists('popularity_score', $result)) {
-            $performer->popularity_score = (float)$result['popularity_score'];
-        }
-
-        if (array_key_exists('keywords', $result)) {
-            $performer->keywords = $result['keywords'];
-        }
-
-        $performer->upcoming_event_first = null;
-        if (!empty($result['upcoming_events']['first'])) {
-            $performer->upcoming_event_first = new Carbon($result['upcoming_events']['first']);
-        }
-
-        $performer->upcoming_event_last = null;
-        if (!empty($result['upcoming_events']['last'])) {
-            $performer->upcoming_event_last = new Carbon($result['upcoming_events']['last']);
-        }
-
-
-        if (array_key_exists('url', $result)) {
-            $performer->url = $result['url'];
-        }
-
-        if (array_key_exists('created_at', $result)) {
-            $performer->tevo_created_at = new Carbon($result['created_at']);
-        }
-        if (array_key_exists('updated_at', $result)) {
-            $performer->tevo_updated_at = new Carbon($result['updated_at']);
-        }
-        if (array_key_exists('deleted_at', $result)) {
-            $performer->tevo_deleted_at = new Carbon($result['deleted_at']);
-        }
 
         /**
-         * If we have a deleted_at value then we are deleting the item
-         * but we need to ensure that we save() it first to record some
-         * data and to ensure it actually even exists. We do this via
-         * the saveThenDelete() method which does not trigger any of the
-         * saving events (but it does trigger the deleting events).
+         * Add custom mutations for this item type here
          */
-        if (!empty($result['deleted_at'])) {
-            $performer->saveThenDelete();
+        $result['category_id'] = $result['category']['id'] ?? null;
+        unset($result['category']);
 
-            // Fire an event that it was deleted
-            EventFacade::fire(new ItemWasDeleted($performer));
-        } else {
-            if ($performer->save()) {
-                // Fire an event if an INSERT or UPDATE was actually performed
-                // But NOT if we are deleting.
-                EventFacade::fire(new ItemWasStored($performer));
-            }
-        }
+        $result['venue_id'] = $result['venue']['id'] ?? null;
+        unset($result['venue']);
 
-        return $performer;
+        $result['upcoming_event_first'] = Carbon::parse($result['upcoming_events']['first']) ?? null;
+        $result['upcoming_event_last'] = Carbon::parse($result['upcoming_events']['last']) ?? null;
+        unset($result['upcoming_events']);
+
+        return $result;
     }
 
 

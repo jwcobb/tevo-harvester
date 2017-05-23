@@ -1,8 +1,8 @@
 <?php
 
-namespace TevoHarvester\Listeners;
+namespace App\Listeners;
 
-use TevoHarvester\Events\ItemWasDeleted;
+use App\Events\ItemWasDeleted;
 
 class RecordItemDelete
 {

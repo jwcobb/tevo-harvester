@@ -1,9 +1,10 @@
 <?php
 
-namespace TevoHarvester\Providers;
+namespace App\Providers;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,6 +16,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        /**
+         * Avoid MySQL errors when using utf8mb4 by setting the
+         * maximum string length to 191.
+         *
+         * @link https://laravel-news.com/laravel-5-4-key-too-long-error
+         * @link https://mathiasbynens.be/notes/mysql-utf8mb4
+         */
+//        Schema::defaultStringLength(191);
+
         /**
          * Custom Blade directive for checking when a Harvest was last run
          * and returning a formatted string.

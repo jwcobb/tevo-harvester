@@ -1,6 +1,6 @@
 <?php
 
-namespace TevoHarvester;
+namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,7 +13,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'harvester_users';
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.

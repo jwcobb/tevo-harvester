@@ -1,8 +1,8 @@
 <?php
 
-namespace TevoHarvester\Listeners;
+namespace App\Listeners;
 
-use TevoHarvester\Events\ItemWasStored;
+use App\Events\ItemWasStored;
 
 class RecordItemUpdate
 {

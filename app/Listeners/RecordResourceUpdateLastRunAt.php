@@ -1,9 +1,9 @@
 <?php
 
-namespace TevoHarvester\Listeners;
+namespace App\Listeners;
 
-use TevoHarvester\Events\ResourceUpdateWasCompleted;
-use TevoHarvester\Tevo\Harvest;
+use App\Events\ResourceUpdateWasCompleted;
+use App\Tevo\Harvest;
 
 class RecordResourceUpdateLastRunAt
 {

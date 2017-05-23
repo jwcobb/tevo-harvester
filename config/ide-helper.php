@@ -83,7 +83,7 @@ return [
     */
     
     'interfaces' => [
-        '\Illuminate\Contracts\Auth\Authenticatable' => config('auth.model', 'TevoHarvester\User'),
+        '\Illuminate\Contracts\Auth\Authenticatable' => config('auth.model', 'App\User'),
     ],
 
     /*

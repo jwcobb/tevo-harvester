@@ -1,11 +1,11 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Harvest
  *
- * @package TevoHarvester\Tevo
+ * @package App\Tevo
  */
 class Harvest extends Model
 {
