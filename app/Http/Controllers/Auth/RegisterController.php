@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace TevoHarvester\Http\Controllers\Auth;
 
-use App\User;
+use TevoHarvester\User;
 use Validator;
-use App\Http\Controllers\Controller;
+use TevoHarvester\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
