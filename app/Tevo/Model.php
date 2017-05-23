@@ -46,7 +46,7 @@ class Model extends BaseModel
      *
      * @return bool|null
      */
-    protected function saveThenDelete(array $options = array())
+    protected function saveThenDelete(array $options = [])
     {
         $query = $this->newQueryWithoutScopes();
 
@@ -126,7 +126,7 @@ class Model extends BaseModel
      *
      * @return \Illuminate\Support\Collection|static|null
      */
-    public static function findWithTrashed($id, $columns = array('*'))
+    public static function findWithTrashed($id, $columns = ['*'])
     {
         $instance = new static;
 
@@ -146,7 +146,7 @@ class Model extends BaseModel
      *
      * @return \Illuminate\Support\Collection|static
      */
-    public static function findOrNewWithTrashed($id, $columns = array('*'))
+    public static function findOrNewWithTrashed($id, $columns = ['*'])
     {
         if (!is_null($model = static::findWithTrashed($id, $columns))) {
             return $model;
