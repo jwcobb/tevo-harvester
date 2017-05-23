@@ -100,6 +100,4 @@ class UpdateResourceJob extends Job implements SelfHandling
             }
         }
     }
-
-
 }

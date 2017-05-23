@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Event as EventFacade;
 use TevoHarvester\Events\ItemWasDeleted;
 use TevoHarvester\Events\ItemWasStored;
 
-
 class Category extends Model
 {
     /**

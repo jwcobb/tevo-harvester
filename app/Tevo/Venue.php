@@ -205,6 +205,4 @@ class Venue extends Model
             $this->attributes['keywords'] = $value;
         }
     }
-
-
 }

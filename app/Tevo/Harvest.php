@@ -94,5 +94,4 @@ class Harvest extends Model
             $this->attributes['then_ping_url'] = $value;
         }
     }
-
 }

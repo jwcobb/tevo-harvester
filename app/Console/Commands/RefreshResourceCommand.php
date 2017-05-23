@@ -8,7 +8,6 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use TevoHarvester\Jobs\UpdateResourceJob;
 use TevoHarvester\Tevo\Harvest;
 
-
 class RefreshResourceCommand extends Command
 {
     use DispatchesJobs;
@@ -79,6 +78,5 @@ class RefreshResourceCommand extends Command
         }
         $this->info($message);
         $this->dispatch($job);
-
     }
 }

@@ -73,6 +73,5 @@ class Kernel extends ConsoleKernel
             // Hopefully we are only here because we are migrating,
             // which does not like the database query above.
         }
-
     }
 }

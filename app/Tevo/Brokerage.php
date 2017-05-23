@@ -166,6 +166,4 @@ class Brokerage extends Model
             $this->attributes['logo'] = $value;
         }
     }
-
-
 }

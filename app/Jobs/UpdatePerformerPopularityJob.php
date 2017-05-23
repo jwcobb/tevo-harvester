@@ -94,8 +94,5 @@ class UpdatePerformerPopularityJob extends Job implements SelfHandling
         foreach ($results[$this->harvest->resource] as $result) {
             yield $result;
         }
-
     }
-
-
 }

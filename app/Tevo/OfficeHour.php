@@ -72,5 +72,4 @@ class OfficeHour extends Model
     {
         return $this->belongsTo(Office::class);
     }
-
 }

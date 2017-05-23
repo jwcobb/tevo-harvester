@@ -220,6 +220,4 @@ class Performer extends Model
             $this->attributes['keywords'] = $value;
         }
     }
-
-
 }

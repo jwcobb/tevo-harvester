@@ -457,7 +457,6 @@ class CreateTevoHarvestTables extends Migration
                 'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
         ]);
-
     }
 
 
@@ -493,6 +492,5 @@ class CreateTevoHarvestTables extends Migration
         Schema::drop('categories');
 
         Schema::drop('harvests');
-
     }
 }

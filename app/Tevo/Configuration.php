@@ -169,6 +169,4 @@ class Configuration extends Model
     {
         return $this->belongsTo(Venue::class);
     }
-
-
 }

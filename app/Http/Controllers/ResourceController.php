@@ -29,7 +29,6 @@ class ResourceController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
     }
 
 
@@ -233,7 +232,6 @@ class ResourceController extends Controller
             $job = new UpdatePerformerPopularityJob($harvest, $category->id, $last_category_id);
 
             $this->dispatch($job);
-
         }
 
         return view('resource', [
@@ -241,5 +239,4 @@ class ResourceController extends Controller
             'job'       => $job,
         ]);
     }
-
 }

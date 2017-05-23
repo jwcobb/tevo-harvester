@@ -80,5 +80,4 @@ class OfficeEmailAddress extends Model
     {
         $this->attributes['email_address'] = strtolower($value);
     }
-
 }

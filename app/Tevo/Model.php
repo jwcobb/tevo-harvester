@@ -4,7 +4,6 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-
 class Model extends BaseModel
 {
     use SoftDeletes;
@@ -75,9 +74,7 @@ class Model extends BaseModel
                     $this->setKeysForSaveQuery($query)->update($dirty);
                 }
             }
-        }
-
-        // If the model is brand new, we'll insert it into our database and set the
+        } // If the model is brand new, we'll insert it into our database and set the
         // ID attribute on the model to the value of the newly inserted row's ID
         // which is typically an auto-increment value managed by the database.
         else {
@@ -98,9 +95,7 @@ class Model extends BaseModel
 
             if ($this->incrementing) {
                 $this->insertAndSetId($query, $attributes);
-            }
-
-            // If the table is not incrementing we'll simply insert this attributes as they
+            } // If the table is not incrementing we'll simply insert this attributes as they
             // are, as this attributes arrays must contain an "id" column already placed
             // there by the developer as the manually determined key for these models.
             else {
@@ -111,13 +106,13 @@ class Model extends BaseModel
             // the created event is fired, just in case the developer tries to update it
             // during the event. This will allow them to do so and run an update here.
             $this->exists = true;
-
         }
 
         $this->syncOriginal();
 
-        if (array_get($options, 'touch', true))
+        if (array_get($options, 'touch', true)) {
             $this->touchOwners();
+        }
 
         return $this->delete();
     }
@@ -135,8 +130,9 @@ class Model extends BaseModel
     {
         $instance = new static;
 
-        if (is_array($id) && empty($id))
+        if (is_array($id) && empty($id)) {
             return $instance->newCollection();
+        }
 
         return $instance->newQueryWithoutScope(new SoftDeletingScope)->find($id, $columns);
     }
@@ -152,8 +148,9 @@ class Model extends BaseModel
      */
     public static function findOrNewWithTrashed($id, $columns = array('*'))
     {
-        if (!is_null($model = static::findWithTrashed($id, $columns)))
+        if (!is_null($model = static::findWithTrashed($id, $columns))) {
             return $model;
+        }
 
         return new static;
     }
@@ -167,5 +164,4 @@ class Model extends BaseModel
     {
         return $query->where('deleted_at', null);
     }
-
 }

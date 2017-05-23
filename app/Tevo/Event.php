@@ -215,8 +215,6 @@ class Event extends Model
                 }
             }
             unset($performance);
-
-
         }
 
         return $event;
@@ -291,6 +289,4 @@ class Event extends Model
             $this->attributes['notes'] = $value;
         }
     }
-
-
 }

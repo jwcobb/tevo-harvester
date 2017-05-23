@@ -46,7 +46,6 @@ class TevoApiServiceProvider extends TEvoServiceProvider
             $apiClient->getEmitter()->attach($logSubscriber);
 
             return $apiClient;
-
         });
 
         $this->app->alias('Tevo', self::class);

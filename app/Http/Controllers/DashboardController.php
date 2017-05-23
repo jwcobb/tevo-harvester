@@ -32,5 +32,4 @@ class DashboardController extends Controller
 
         return view('dashboard', ['harvests' => $harvestsGroupedByResource, 'resources' => $resources]);
     }
-
 }

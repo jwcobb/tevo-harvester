@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use TevoHarvester\Tevo\Harvest;
 
-
 class ShowHarvesterStatusCommand extends Command
 {
     use DispatchesJobs;
@@ -60,6 +59,4 @@ class ShowHarvesterStatusCommand extends Command
 
         $this->table($headers, $data);
     }
-
-
 }

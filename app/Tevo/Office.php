@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Event as EventFacade;
 use TevoHarvester\Events\ItemWasDeleted;
 use TevoHarvester\Events\ItemWasStored;
 
-
 class Office extends Model
 {
 
@@ -251,8 +250,6 @@ class Office extends Model
                 }
             }
             unset($hour);
-
-
         }
 
         return $office;
@@ -290,6 +287,4 @@ class Office extends Model
     {
         return $this->belongsTo(Brokerage::class);
     }
-
-
 }
