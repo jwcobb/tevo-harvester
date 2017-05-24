@@ -1,5 +1,11 @@
 # TEvo Harvester Changelog
 
+## 2.0.0 (May 24, 2017)
+- [BC Break] New migrations and table schemas
+- Rewrite much of the saving logic
+- Upgrade to Laravel 5.4 and [ticketevolution-php](https://github.com/ticketevolution/ticketevolution-php/) 4.0
+- Requires PHP 7.1
+
 ## 1.1.4 (February 1, 2015)
 - Fix for offices with no email addresses
 

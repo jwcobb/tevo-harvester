@@ -33,13 +33,13 @@ If you wish to use the web based functionality you need to create a User. To do 
 Using your browser go to `/register` and create a User. Once completed you should set `ALLOW_REGISTRATION` back to `false` to prevent others from registering.
 
 ## Running Updates
-Updates of the API information can be run either via the Dashboard or via command line using the [artisan console](https://laravel.com/docs/5.2/artisan) with a command such as 
+Updates of the API information can be run either via the Dashboard or via command line using the [artisan console](https://laravel.com/docs/5.4/artisan) with a command such as 
 
 ```php
 $ php artisan harvester:update performers --action=active
 ```
 
 ### Scheduling Updates
-You can use the [Laravel Scheduler](https://laravel.com/docs/5.2/scheduling) to run these commands automatically at preset times. Just be sure to [add the Laravel Scheduler to your `crontab`](http://laravel.com/docs/5.1/scheduling#introduction).
+You can use the [Laravel Scheduler](https://laravel.com/docs/5.4/scheduling) to run these commands automatically at preset times. Just be sure to [add the Laravel Scheduler to your `crontab`](http://laravel.com/docs/5.4/scheduling#introduction).
 
 Each Harvest already has a suggested update interval assigned to it, but using the Dashboard you can edit the schedule and even include URLs to ping before and after updates in case you wish to use a [Dead Man’s Switch](https://en.wikipedia.org/wiki/Dead_man%27s_switch) such as [Pushmon](http://www.pushmon.com/) or [Dead Man’s Snitch](https://deadmanssnitch.com/) to ensure your updates are running as desired.
