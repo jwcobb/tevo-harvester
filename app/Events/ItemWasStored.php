@@ -1,9 +1,9 @@
 <?php
 
-namespace TevoHarvester\Events;
+namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
-use TevoHarvester\Tevo\Model;
+use App\Tevo\Model;
 
 class ItemWasStored extends Event
 {

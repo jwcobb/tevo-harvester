@@ -1,6 +1,6 @@
-<?php namespace TevoHarvester\Http\Controllers;
+<?php namespace App\Http\Controllers;
 
-use TevoHarvester\Tevo\Harvest;
+use App\Tevo\Harvest;
 
 class DashboardController extends Controller
 {
@@ -32,5 +32,4 @@ class DashboardController extends Controller
 
         return view('dashboard', ['harvests' => $harvestsGroupedByResource, 'resources' => $resources]);
     }
-
 }

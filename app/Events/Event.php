@@ -1,6 +1,6 @@
 <?php
 
-namespace TevoHarvester\Events;
+namespace App\Events;
 
 abstract class Event
 {

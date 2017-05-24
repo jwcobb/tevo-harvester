@@ -1,4 +1,4 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
 class Performance extends Model
 {
@@ -55,13 +55,6 @@ class Performance extends Model
         'deleted_at',
     ];
 
-    /**
-     * The attributes excluded from the model’s JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [];
-
 
     /**
      * Performances can have only 1 Performer.
@@ -94,6 +87,4 @@ class Performance extends Model
     {
         return $this->belongsTo(Event::class);
     }
-
-
 }

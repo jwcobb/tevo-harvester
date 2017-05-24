@@ -1,17 +1,17 @@
-<?php namespace TevoHarvester\Http\Controllers;
+<?php namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
-use TevoHarvester\Jobs\UpdatePerformerPopularityJob;
-use TevoHarvester\Jobs\UpdateResourceJob;
-use TevoHarvester\Tevo\Category;
-use TevoHarvester\Tevo\Harvest;
+use App\Jobs\UpdatePerformerPopularityJob;
+use App\Jobs\UpdateResourceJob;
+use App\Tevo\Category;
+use App\Tevo\Harvest;
 
 /**
  * Class ResourceController
  *
- * @package TevoHarvester\Http\Controllers
+ * @package App\Http\Controllers
  */
 class ResourceController extends Controller
 {
@@ -29,7 +29,6 @@ class ResourceController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
     }
 
 
@@ -233,7 +232,6 @@ class ResourceController extends Controller
             $job = new UpdatePerformerPopularityJob($harvest, $category->id, $last_category_id);
 
             $this->dispatch($job);
-
         }
 
         return view('resource', [
@@ -241,5 +239,4 @@ class ResourceController extends Controller
             'job'       => $job,
         ]);
     }
-
 }

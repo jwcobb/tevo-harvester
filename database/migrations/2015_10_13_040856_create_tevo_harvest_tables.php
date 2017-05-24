@@ -3,13 +3,13 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
-use TevoHarvester\Tevo\Brokerage;
-use TevoHarvester\Tevo\Category;
-use TevoHarvester\Tevo\Configuration;
-use TevoHarvester\Tevo\Event;
-use TevoHarvester\Tevo\Office;
-use TevoHarvester\Tevo\Performer;
-use TevoHarvester\Tevo\Venue;
+use App\Tevo\Brokerage;
+use App\Tevo\Category;
+use App\Tevo\Configuration;
+use App\Tevo\Event;
+use App\Tevo\Office;
+use App\Tevo\Performer;
+use App\Tevo\Venue;
 
 class CreateTevoHarvestTables extends Migration
 {
@@ -23,15 +23,15 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('brokerages', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->smallInteger('id', false, true);
-            $table->string('name', 191);
+            $table->integer('id', false, true);
+            $table->string('name');
 //            $table->index('name');
-            $table->string('abbreviation', 191);
+            $table->string('abbreviation');
             $table->boolean('natb_member')->unsigned()->default(0);
 //            $table->boolean('evopay')->unsigned()->default(0);
-            $table->string('logo', 191)->nullable()->default(null);
+            $table->string('logo')->nullable()->default(null);
 
-            $table->string('url', 191);
+            $table->string('url');
             $table->timestamp('tevo_created_at')->nullable()->default(null);
             $table->timestamp('tevo_updated_at')->nullable()->default(null);
             $table->timestamp('tevo_deleted_at')->nullable()->default(null);
@@ -44,21 +44,21 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('offices', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->smallInteger('id', false, true);
-            $table->smallInteger('brokerage_id', false, true)->index();
+            $table->integer('id', false, true);
+            $table->integer('brokerage_id', false, true)->index();
             $table->foreign('brokerage_id')->references('id')
                 ->on('brokerages')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->string('name', 191);
+            $table->string('name');
             $table->boolean('main')->unsigned()->default(0);
 
-            $table->string('street_address', 191)->nullable()->default(null);
-            $table->string('extended_address', 191)->nullable()->default(null);
-            $table->string('locality', 191)->nullable()->default(null)->index()->index();
-            $table->string('region', 191)->nullable()->default(null)->index();
-            $table->string('postal_code', 10)->nullable()->default(null);
+            $table->string('street_address')->nullable()->default(null);
+            $table->string('extended_address')->nullable()->default(null);
+            $table->string('locality')->nullable()->default(null)->index()->index();
+            $table->string('region')->nullable()->default(null)->index();
+            $table->string('postal_code', 20)->nullable()->default(null);
             $table->string('country_code', 5)->nullable()->default(null)->index();
             $table->decimal('latitude', 17, 14)->nullable()->default(null);
             $table->decimal('longitude', 17, 14)->nullable()->default(null);
@@ -67,12 +67,13 @@ class CreateTevoHarvestTables extends Migration
             $table->string('fax', 40)->nullable()->default(null);
 
             $table->boolean('po_box')->unsigned()->default(0);
-            $table->string('time_zone', 191)->nullable()->default(null);
+            $table->string('time_zone')->nullable()->default(null);
             $table->boolean('pos')->unsigned()->default(0);
             $table->boolean('evopay')->unsigned()->default(0);
             $table->decimal('evopay_discount', 4, 2)->unsigned()->default(0.00);
 
-            $table->string('url', 191);
+            $table->string('url');
+            $table->timestamp('fedex_pickup_dropoff_time')->nullable()->default(null);
             $table->timestamp('tevo_created_at')->nullable()->default(null);
             $table->timestamp('tevo_updated_at')->nullable()->default(null);
             $table->timestamp('tevo_deleted_at')->nullable()->default(null);
@@ -84,14 +85,14 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('office_email_addresses', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->mediumInteger('id', true, true);
-            $table->smallInteger('office_id', false, true)->index();
+            $table->integer('id', true, true);
+            $table->integer('office_id', false, true)->index();
             $table->foreign('office_id')->references('id')
                 ->on('offices')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->string('email_address', 191);
+            $table->string('email_address');
             $table->unique(['office_id', 'email_address']);
 
             $table->timestamps();
@@ -102,8 +103,8 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('office_hours', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->mediumInteger('id', true, true);
-            $table->smallInteger('office_id', false, true)->index();
+            $table->integer('id', true, true);
+            $table->integer('office_id', false, true)->index();
             $table->foreign('office_id')->references('id')
                 ->on('offices')
                 ->onDelete('cascade')
@@ -122,18 +123,18 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->smallInteger('id', false, true);
-            $table->smallInteger('parent_id', false, true)->nullable()->default(null)->index();
+            $table->integer('id', false, true);
+            $table->integer('parent_id', false, true)->nullable()->default(null)->index();
 //            $table->foreign('parent_id')->references('id')
 //                ->on('categories')
 //                ->onDelete('restrict')
 //                ->onUpdate('restrict');
 
-            $table->string('name', 191)->index();
-            $table->string('slug', 191)->index();
+            $table->string('name')->index();
+            $table->string('slug')->index();
 
-            $table->string('url', 191);
-            $table->string('slug_url', 191);
+            $table->string('url');
+            $table->string('slug_url');
             $table->timestamp('tevo_created_at')->nullable()->default(null);
             $table->timestamp('tevo_updated_at')->nullable()->default(null);
             $table->timestamp('tevo_deleted_at')->nullable()->default(null);
@@ -145,27 +146,27 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('venues', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->mediumInteger('id', false, true);
+            $table->integer('id', false, true);
 
-            $table->string('name', 191)->index();
-            $table->string('slug', 191);
+            $table->string('name')->index();
+            $table->string('slug');
             $table->decimal('popularity_score', 7, 6)->unsigned()->default(0.000000)->index();
 
-            $table->string('street_address', 191)->nullable()->default(null);
-            $table->string('extended_address', 191)->nullable()->default(null);
-            $table->string('locality', 191)->nullable()->default(null)->index()->index();
-            $table->string('region', 191)->nullable()->default(null)->index();
-            $table->string('postal_code', 10)->nullable()->default(null);
+            $table->string('street_address')->nullable()->default(null);
+            $table->string('extended_address')->nullable()->default(null);
+            $table->string('locality')->nullable()->default(null)->index()->index();
+            $table->string('region')->nullable()->default(null)->index();
+            $table->string('postal_code', 20)->nullable()->default(null);
             $table->string('country_code', 5)->nullable()->default(null)->index();
             $table->decimal('latitude', 17, 14)->nullable()->default(null);
             $table->decimal('longitude', 17, 14)->nullable()->default(null);
 
             $table->text('keywords')->nullable()->default(null);
-            $table->timestamp('upcoming_event_first')->nullable()->default(null)->index();
-            $table->timestamp('upcoming_event_last')->nullable()->default(null)->index();
+            $table->dateTime('upcoming_event_first')->nullable()->default(null)->index();
+            $table->dateTime('upcoming_event_last')->nullable()->default(null)->index();
 
-            $table->string('url', 191);
-            $table->string('slug_url', 191);
+            $table->string('url');
+            $table->string('slug_url');
             $table->timestamp('tevo_created_at')->nullable()->default(null);
             $table->timestamp('tevo_updated_at')->nullable()->default(null);
             $table->timestamp('tevo_deleted_at')->nullable()->default(null);
@@ -178,21 +179,21 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('configurations', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->mediumInteger('id', false, true);
-            $table->mediumInteger('venue_id', false, true)->index();
+            $table->integer('id', false, true);
+            $table->integer('venue_id', false, true)->index();
             $table->foreign('venue_id')->references('id')
                 ->on('venues')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->string('name', 191)->index();
+            $table->string('name')->index();
             $table->boolean('primary')->unsigned()->default(0);
             $table->boolean('general_admission')->unsigned()->default(0);
             $table->integer('capacity')->unsigned()->nullable()->default(null);
-            $table->string('seating_chart_url_medium', 191)->nullable()->default(null);
-            $table->string('seating_chart_url_large', 191)->nullable()->default(null);
+            $table->string('seating_chart_url_medium')->nullable()->default(null);
+            $table->string('seating_chart_url_large')->nullable()->default(null);
 
-            $table->string('url', 191);
+            $table->string('url');
             $table->timestamp('tevo_created_at')->nullable()->default(null);
             $table->timestamp('tevo_updated_at')->nullable()->default(null);
             $table->timestamp('tevo_deleted_at')->nullable()->default(null);
@@ -204,23 +205,23 @@ class CreateTevoHarvestTables extends Migration
         Schema::create('performers', function (Blueprint $table) {
             $table->engine = 'MyISAM';
 
-            $table->mediumInteger('id', false, true);
+            $table->integer('id', false, true);
 
-            $table->string('name', 191)->index();
-            $table->string('slug', 191);
-            $table->smallInteger('category_id', false, true)->nullable()->default(null)->index();
+            $table->string('name')->index();
+            $table->string('slug');
+            $table->integer('category_id', false, true)->nullable()->default(null)->index();
             $table->foreign('category_id')->references('id')->on('categories');
 
             $table->decimal('popularity_score', 7, 6)->unsigned()->default(0.000000)->index();
-            $table->mediumInteger('venue_id', false, true)->nullable()->default(null)->index();
+            $table->integer('venue_id', false, true)->nullable()->default(null)->index();
             $table->foreign('venue_id')->references('id')->on('tevoVenues');
 
             $table->text('keywords')->nullable()->default(null);
-            $table->timestamp('upcoming_event_first')->nullable()->default(null)->index();
-            $table->timestamp('upcoming_event_last')->nullable()->default(null)->index();
+            $table->dateTime('upcoming_event_first')->nullable()->default(null)->index();
+            $table->dateTime('upcoming_event_last')->nullable()->default(null)->index();
 
-            $table->string('url', 191);
-            $table->string('slug_url', 191);
+            $table->string('url');
+            $table->string('slug_url');
             $table->timestamp('tevo_created_at')->nullable()->default(null);
             $table->timestamp('tevo_updated_at')->nullable()->default(null);
             $table->timestamp('tevo_deleted_at')->nullable()->default(null);
@@ -235,13 +236,14 @@ class CreateTevoHarvestTables extends Migration
 
             $table->integer('id', false, true);
 
-            $table->string('name', 191)->index();
-            $table->timestamp('occurs_at')->index();
-            $table->mediumInteger('venue_id', false, true)->index();
+            $table->string('name')->index();
+            $table->dateTime('occurs_at')->index()->default('1970-01-01 00:00:01');
+            $table->timestampTz('occurs_at_local')->index()->default('1970-01-01 00:00:01');
+            $table->integer('venue_id', false, true)->index();
             $table->foreign('venue_id')->references('id')->on('venues');
-            $table->mediumInteger('configuration_id', false, true)->index();
+            $table->integer('configuration_id', false, true)->index();
             $table->foreign('configuration_id')->references('id')->on('configurations');
-            $table->smallInteger('category_id', false, true)->nullable()->default(null)->index();
+            $table->integer('category_id', false, true)->nullable()->default(null)->index();
             $table->foreign('category_id')->references('id')->on('categories');
             $table->decimal('popularity_score', 12, 6)->unsigned()->default(0.000000)->index();
             $table->decimal('short_term_popularity_score', 7, 6)->unsigned()->default(0.000000)->index();
@@ -269,7 +271,7 @@ class CreateTevoHarvestTables extends Migration
 
             $table->integer('id', true, true);
             $table->integer('event_id')->unsigned();
-            $table->mediumInteger('performer_id', false, true)->index();
+            $table->integer('performer_id', false, true)->index();
             $table->foreign('performer_id')->references('id')
                 ->on('performers')
                 ->onDelete('cascade')
@@ -278,18 +280,15 @@ class CreateTevoHarvestTables extends Migration
             $table->unique(['event_id', 'performer_id']);
             $table->boolean('primary')->unsigned()->default(0)->index();
 
-            $table->string('event_name', 191)->index();
-            $table->timestamp('occurs_at')->index();
+            $table->string('event_name')->index();
+            $table->dateTime('occurs_at')->index();
 
-            $table->mediumInteger('venue_id', false, true)->index();
+            $table->integer('venue_id', false, true)->index();
             $table->foreign('venue_id')->references('id')
                 ->on('venues')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->timestamp('tevo_created_at')->nullable()->default(null);
-            $table->timestamp('tevo_updated_at')->nullable()->default(null);
-            $table->timestamp('tevo_deleted_at')->nullable()->default(null);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -303,10 +302,10 @@ class CreateTevoHarvestTables extends Migration
             $table->enum('action', ['active', 'deleted', 'popularity'])->default('active');
             $table->unique(['resource', 'action']);
             $table->string('library_method', 50);
-            $table->string('model_class', 191);
+            $table->string('model_class');
             $table->string('scheduler_frequency_method', 100)->nullable()->default(null);
-            $table->string('ping_before_url', 191)->nullable()->default(null);
-            $table->string('then_ping_url', 191)->nullable()->default(null);
+            $table->string('ping_before_url')->nullable()->default(null);
+            $table->string('then_ping_url')->nullable()->default(null);
             $table->timestamp('last_run_at')->nullable()->default(null);
 
             $table->timestamps();
@@ -339,7 +338,7 @@ class CreateTevoHarvestTables extends Migration
             [
                 'resource'                   => 'categories',
                 'action'                     => 'deleted',
-                'library_method'             => 'listCategories',
+                'library_method'             => 'listCategoriesDeleted',
                 'model_class'                => Category::class,
                 'scheduler_frequency_method' => 'daily',
                 'ping_before_url'            => null,
@@ -375,7 +374,7 @@ class CreateTevoHarvestTables extends Migration
             [
                 'resource'                   => 'events',
                 'action'                     => 'deleted',
-                'library_method'             => 'listEvents',
+                'library_method'             => 'listEventsDeleted',
                 'model_class'                => Event::class,
                 'scheduler_frequency_method' => 'everyThirtyMinutes',
                 'ping_before_url'            => null,
@@ -411,7 +410,7 @@ class CreateTevoHarvestTables extends Migration
             [
                 'resource'                   => 'performers',
                 'action'                     => 'deleted',
-                'library_method'             => 'listPerformers',
+                'library_method'             => 'listPerformersDeleted',
                 'model_class'                => Performer::class,
                 'scheduler_frequency_method' => 'everyThirtyMinutes',
                 'ping_before_url'            => null,
@@ -447,7 +446,7 @@ class CreateTevoHarvestTables extends Migration
             [
                 'resource'                   => 'venues',
                 'action'                     => 'deleted',
-                'library_method'             => 'listVenues',
+                'library_method'             => 'listVenuesDeleted',
                 'model_class'                => Venue::class,
                 'scheduler_frequency_method' => 'everyThirtyMinutes',
                 'ping_before_url'            => null,
@@ -457,7 +456,6 @@ class CreateTevoHarvestTables extends Migration
                 'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
         ]);
-
     }
 
 
@@ -493,6 +491,5 @@ class CreateTevoHarvestTables extends Migration
         Schema::drop('categories');
 
         Schema::drop('harvests');
-
     }
 }

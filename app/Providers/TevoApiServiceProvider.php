@@ -1,6 +1,6 @@
 <?php
 
-namespace TevoHarvester\Providers;
+namespace App\Providers;
 
 use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +46,6 @@ class TevoApiServiceProvider extends TEvoServiceProvider
             $apiClient->getEmitter()->attach($logSubscriber);
 
             return $apiClient;
-
         });
 
         $this->app->alias('Tevo', self::class);

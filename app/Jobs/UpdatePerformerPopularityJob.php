@@ -1,15 +1,14 @@
 <?php
 
-namespace TevoHarvester\Jobs;
+namespace App\Jobs;
 
 use Carbon\Carbon;
-use Illuminate\Contracts\Bus\SelfHandling;
 use Illuminate\Support\Facades\Event;
-use TevoHarvester\Events\ResourceUpdateWasCompleted;
-use TevoHarvester\Tevo\Harvest;
+use App\Events\ResourceUpdateWasCompleted;
+use App\Tevo\Harvest;
 use TicketEvolution\Laravel\TEvoFacade as Tevo;
 
-class UpdatePerformerPopularityJob extends Job implements SelfHandling
+class UpdatePerformerPopularityJob extends Job
 {
 
     /**
@@ -94,8 +93,5 @@ class UpdatePerformerPopularityJob extends Job implements SelfHandling
         foreach ($results[$this->harvest->resource] as $result) {
             yield $result;
         }
-
     }
-
-
 }

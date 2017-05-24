@@ -1,15 +1,14 @@
 <?php
 
-namespace TevoHarvester\Console\Commands;
+namespace App\Console\Commands;
 
+use App\Jobs\UpdatePerformerPopularityJob;
+use App\Jobs\UpdateResourceJob;
+use App\Tevo\Category;
+use App\Tevo\Harvest;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use TevoHarvester\Jobs\UpdatePerformerPopularityJob;
-use TevoHarvester\Jobs\UpdateResourceJob;
-use TevoHarvester\Tevo\Category;
-use TevoHarvester\Tevo\Harvest;
-
 
 class UpdateResourceCommand extends Command
 {
@@ -106,7 +105,6 @@ class UpdateResourceCommand extends Command
         }
         $this->info($message);
         $this->dispatch($job);
-
     }
 
 
@@ -148,6 +146,5 @@ class UpdateResourceCommand extends Command
             $job = new UpdatePerformerPopularityJob($harvest, $category->id, $last_category_id);
             $this->dispatch($job);
         }
-
     }
 }

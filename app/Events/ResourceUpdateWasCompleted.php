@@ -1,10 +1,10 @@
 <?php
 
-namespace TevoHarvester\Events;
+namespace App\Events;
 
 use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
-use TevoHarvester\Tevo\Harvest;
+use App\Tevo\Harvest;
 
 class ResourceUpdateWasCompleted extends Event
 {

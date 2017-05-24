@@ -1,4 +1,4 @@
-<?php namespace TevoHarvester\Tevo;
+<?php namespace App\Tevo;
 
 class OfficeHour extends Model
 {
@@ -55,13 +55,6 @@ class OfficeHour extends Model
         'deleted_at',
     ];
 
-    /**
-     * The attributes excluded from the model’s JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [];
-
 
     /**
      * OfficeHours belong to an Office.
@@ -72,5 +65,4 @@ class OfficeHour extends Model
     {
         return $this->belongsTo(Office::class);
     }
-
 }

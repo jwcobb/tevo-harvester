@@ -1,13 +1,12 @@
 <?php
 
-namespace TevoHarvester\Console\Commands;
+namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use TevoHarvester\Jobs\UpdateResourceJob;
-use TevoHarvester\Tevo\Harvest;
-
+use App\Jobs\UpdateResourceJob;
+use App\Tevo\Harvest;
 
 class RefreshResourceCommand extends Command
 {
@@ -79,6 +78,5 @@ class RefreshResourceCommand extends Command
         }
         $this->info($message);
         $this->dispatch($job);
-
     }
 }
