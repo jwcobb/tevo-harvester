@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-
 class Model extends BaseModel
 {
     use SoftDeletes, NullableFields;

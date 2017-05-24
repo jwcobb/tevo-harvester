@@ -75,5 +75,4 @@ trait StoresFromApi
 
         return $item;
     }
-
 }

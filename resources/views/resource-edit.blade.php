@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
-@section('page-title', ucwords($harvest->action . ' ' . $harvest->resource) . ' | TEvo Harvester')
-@section('page-header', ucwords($harvest->action . ' ' . $harvest->resource) . ' <small>Settings</small>')
+@section('page-title')
+    {{ ucwords($harvest->action . ' ' . $harvest->resource) }} | TEvo Harvester
+@endsection
+@section('page-header')
+    {{ ucwords($harvest->action . ' ' . $harvest->resource) }} <small>Settings</small>
+@endsection
 
 @section('content')
     {!! Form::model($harvest, ['method' => 'post', 'class' => 'form-horizontal']) !!}

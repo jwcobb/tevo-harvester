@@ -157,6 +157,7 @@ return [
         Illuminate\Redis\RedisServiceProvider::class,
         Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
         Illuminate\Session\SessionServiceProvider::class,
+        Laravel\Tinker\TinkerServiceProvider::class,
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
@@ -173,8 +174,8 @@ return [
         // Laravel Collective Forms & HTML
         Collective\Html\HtmlServiceProvider::class,
 
-        // Wrap the Ticket Evolution API Client Provider with our own
-        App\Providers\TevoApiServiceProvider::class,
+        // Ticket Evolution API Client Provider
+        TicketEvolution\Laravel\TEvoServiceProvider::class,
 
         /**
          * Conditionally loaded ServiceProviders, such as ones
@@ -201,6 +202,7 @@ return [
         'Artisan'      => Illuminate\Support\Facades\Artisan::class,
         'Auth'         => Illuminate\Support\Facades\Auth::class,
         'Blade'        => Illuminate\Support\Facades\Blade::class,
+        'Broadcast'    => Illuminate\Support\Facades\Broadcast::class,
         'Bus'          => Illuminate\Support\Facades\Bus::class,
         'Cache'        => Illuminate\Support\Facades\Cache::class,
         'Config'       => Illuminate\Support\Facades\Config::class,
@@ -233,6 +235,8 @@ return [
         // Laravel Collective Forms & HTML
         'Form'         => Collective\Html\FormFacade::class,
         'Html'         => Collective\Html\HtmlFacade::class,
+
+        'tevo'         => TicketEvolution\Laravel\TEvoFacade::class,
 
         /**
          * Conditionally loaded Aliases, such as ones
