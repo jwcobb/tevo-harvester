@@ -13,14 +13,14 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\ItemWasStored' => [
-            'App\Listeners\RecordItemUpdate',
+        \App\Events\ItemWasStored::class => [
+            \App\Listeners\RecordItemUpdate::class,
         ],
-        'App\Events\ItemWasDeleted' => [
-            'App\Listeners\RecordItemDelete',
+        \App\Events\ItemWasDeleted::class => [
+            \App\Listeners\RecordItemDelete::class,
         ],
-        'App\Events\ResourceUpdateWasCompleted' => [
-            'App\Listeners\RecordResourceUpdateLastRunAt',
+        \App\Events\ResourceUpdateWasCompleted::class => [
+            \App\Listeners\RecordResourceUpdateLastRunAt::class,
         ],
     ];
 
