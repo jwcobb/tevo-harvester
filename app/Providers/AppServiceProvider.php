@@ -23,14 +23,14 @@ class AppServiceProvider extends ServiceProvider
          * @link https://laravel-news.com/laravel-5-4-key-too-long-error
          * @link https://mathiasbynens.be/notes/mysql-utf8mb4
          */
-//        Schema::defaultStringLength(191);
+        Schema::defaultStringLength(191);
 
         /**
          * Custom Blade directive for checking when a Harvest was last run
          * and returning a formatted string.
          */
         Blade::directive('lastrundiff', function ($lastRunAt) {
-            return "<?php echo '<span title=\"' . with{$lastRunAt}->format('D, M j, Y g:i:s a') . '\">' . with{$lastRunAt}->diffForHumans() . '</span>'; ?>";
+            return "<?php echo '<span title=\"' . with($lastRunAt)->format('D, M j, Y g:i:s a') . '\">' . with($lastRunAt)->diffForHumans() . '</span>'; ?>";
         });
     }
 

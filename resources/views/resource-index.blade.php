@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
-@section('page-title', ucwords($harvests[0]['resource']) . ' | TEvo Harvester')
-@section('page-header', ucwords($harvests[0]['resource'] . ' <small>Actions Available</small>'))
+@section('page-title')
+    {{ ucwords($harvests[0]['resource']) }} | TEvo Harvester'
+@endsection
+@section('page-header')
+    {{ ucwords($harvests[0]['resource']) }} <small>Actions Available</small>
+@endsection
 
 @section('content')
         @foreach($harvests as $harvest)
