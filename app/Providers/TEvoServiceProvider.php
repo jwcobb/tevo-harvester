@@ -65,5 +65,4 @@ class TEvoServiceProvider extends ServiceProvider
     {
         return ['tevo'];
     }
-
 }
