@@ -1,5 +1,8 @@
 # TEvo Harvester Changelog
 
+## 2.0.1 (September 20, 2017)
+- Fixes error `StoresFromApi::deleteFromApi()` thanks to (@ujash for the pull request)
+
 ## 2.0.0 (May 24, 2017)
 - [BC Break] New migrations and table schemas
 - Rewrite much of the saving logic
