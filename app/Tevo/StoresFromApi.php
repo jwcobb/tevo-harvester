@@ -70,7 +70,7 @@ trait StoresFromApi
             $item->saveThenDelete();
 
             // Fire an event that it was deleted
-            EventFacade::fire(new ItemWasDeleted($category));
+            EventFacade::fire(new ItemWasDeleted($item));
         }
 
         return $item;
