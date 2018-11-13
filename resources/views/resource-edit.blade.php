@@ -24,7 +24,7 @@
                         'monthly' => 'monthly',
                     ], $harvest->scheduler_frequency_method, ['class' => 'form-control', 'id' => 'scheduler_frequency_method']) !!}
                 <span id="scheduler_frequency_method_help" class="help-block">See the <a
-                            href="http://laravel.com/docs/master/scheduling#schedule-frequency-options">Laravel Schedule
+                            href="http://laravel.com/docs/5.5/scheduling#schedule-frequency-options">Laravel Schedule
                         Frequency Options</a> for further explanation.</span>
             </div>
         </div>
@@ -36,7 +36,7 @@
             <div class="col-sm-4">
                 {!! Form::url('ping_before_url', $harvest->ping_before_url, ['class' => 'form-control', 'id' => 'ping_before_url']) !!}
                 <span id="ping_before_url_help" class="help-block">A URL to ping before the update starts. See <a
-                            href="http://laravel.com/docs/5.1/scheduling#task-hooks">Laravel Scheduler Pinging URLs</a> for further explanation.</span>
+                            href="http://laravel.com/docs/5.5/scheduling#task-hooks">Laravel Scheduler Pinging URLs</a> for further explanation.</span>
             </div>
         </div>
     </div>
@@ -47,7 +47,7 @@
             <div class="col-sm-4">
                 {!! Form::url('then_ping_url', $harvest->then_ping_url, ['class' => 'form-control', 'id' => 'then_ping_url']) !!}
                 <span id="then_ping_url_help" class="help-block">A URL to ping after the update completes. See <a
-                            href="http://laravel.com/docs/5.1/scheduling#task-hooks">Laravel Scheduler Pinging URLs</a> for further explanation.</span>
+                            href="http://laravel.com/docs/5.5/scheduling#task-hooks">Laravel Scheduler Pinging URLs</a> for further explanation.</span>
             </div>
         </div>
     </div>
