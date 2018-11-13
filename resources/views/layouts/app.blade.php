@@ -1,3 +1,8 @@
+@section('page-header')
+    TEvo Harvester <small>for the Ticket Evolution API</small>
+@endsection
+
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -60,7 +65,7 @@
 
     <div class="container main">
         <div class="page-header">
-            <h1>@yield('page-header', 'TEvo Harvester <small>for the Ticket Evolution API</small>')</h1>
+            <h1>@yield('page-header')</h1>
         </div>
     </div>
 
