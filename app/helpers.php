@@ -2,7 +2,6 @@
 
 use Cake\Chronos\Chronos;
 
-
 /**
  * Get a span of years from two given years.
  * Perfect for keeping the copyright date on a site updated using
@@ -76,8 +75,11 @@ function chronosize($datetime): Chronos
 function getTbaFormat(DateTimeImmutable $datetime, string $format): string
 {
     if ($datetime->format('His') === '000000') {
-        return $datetime->format(preg_replace('/(?:[aABgGhHisuveIOPTZcr]| \\\a\\\t )+[ :]?[aABgGhHisuveIOPTZcr]*/', '',
-                $format)) . config('app.options.tba_format');
+        return $datetime->format(preg_replace(
+            '/(?:[aABgGhHisuveIOPTZcr]| \\\a\\\t )+[ :]?[aABgGhHisuveIOPTZcr]*/',
+            '',
+            $format
+        )) . config('app.options.tba_format');
     } else {
         return $datetime->format($format);
     }
