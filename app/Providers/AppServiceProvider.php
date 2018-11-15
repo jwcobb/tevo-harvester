@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if ($this->app->environment('local')) {
+        if ($this->app->isLocal()) {
             /*
              * Only use Laravel Debugbar in local environment
              */
@@ -53,6 +53,13 @@ class AppServiceProvider extends ServiceProvider
              * Only use LaravelIdeHelper in local environment
              */
             $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+
+
+            /*
+             * Only use Laravel Telescope in local environment
+             */
+            $this->app->register(TelescopeServiceProvider::class);
+
         }
     }
 }

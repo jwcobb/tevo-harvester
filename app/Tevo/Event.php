@@ -85,6 +85,16 @@ class Event extends Model
         /**
          * Add custom mutations for this item type here
          */
+
+        // No event should have a real score that is negative,
+        // but yet I’ve seen it happen. Add some sanity.
+        if ($result['long_term_popularity_score'] < 0) {
+            $result['long_term_popularity_score'] = (float)0;
+        }
+        if ($result['popularity_score'] < 0) {
+            $result['popularity_score'] = (float)0;
+        }
+
         $result['occurs_at'] = rtrim($result['occurs_at'], 'Z');
         $result['occurs_at_local'] = Carbon::parse($result['occurs_at_local']);
 
@@ -115,7 +125,7 @@ class Event extends Model
         // Delete all existing performances for this event and we will
         // restore/add performances as necessary below.
         $event->performances()->delete();
-        
+
         foreach ($result['performances'] as $resultPerformance) {
             $performance = Performance::withTrashed()
                 ->where('event_id', $result['id'])
