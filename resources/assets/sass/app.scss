@@ -1,5 +1,25 @@
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Fonts
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
 
 body {
-  padding-top: 60px;
+  padding-top: 68px;
 }
+.icon-xs {
+  height: 1rem;
+}
+
+.zondicon-primary {fill: map-get($theme-colors, 'primary')}
+.zondicon-secondary {fill: map-get($theme-colors, 'secondary')}
+.zondicon-success {fill: map-get($theme-colors, 'success')}
+.zondicon-danger {fill: map-get($theme-colors, 'danger')}
+.zondicon-warning {fill: map-get($theme-colors, 'warning')}
+.zondicon-info {fill: map-get($theme-colors, 'info')}
+.zondicon-light {fill: map-get($theme-colors, 'light')}
+.zondicon-dark {fill: map-get($theme-colors, 'dark')}

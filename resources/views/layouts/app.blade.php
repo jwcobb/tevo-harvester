@@ -1,61 +1,66 @@
 @section('page-header')
-    TEvo Harvester <small>for the Ticket Evolution API</small>
+    TEvo Harvester
+    <small>for the Ticket Evolution API</small>
 @endsection
 
 
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="{{ app()->getLocale() }}">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>@yield('page-title', 'TEvo Harvester for the Ticket Evolution API')</title>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="stylesheet" href="/css/app.css">
-    @yield('styles')
+    <title>@yield('page-title', 'TEvo Harvester')</title>
+
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body id="app-layout">
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand navbar-dark fixed-top bg-primary">
         <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url('/') }}" id="logo-main" style="display: block">TEvo Harvester</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                <!-- Collapsed Hamburger -->
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#harvest-navbar-collapse">
-                    <span class="sr-only">Toggle Navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-
-                <!-- Branding Image -->
-                <a href="{{ route('dashboard') }}" class="navbar-brand">TEvo Harvester</a>
-            </div>
-
-            <div class="collapse navbar-collapse" id="harvest-navbar-collapse">
-                <!-- Left Side Of Navbar -->
-                <ul class="nav navbar-nav">
-                    <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link disabled text-white" href="{{ route('dashboard') }}">Dashboard</a>
+                    </li>
                 </ul>
-
-                <!-- Right Side Of Navbar -->
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- Authentication Links -->
+            </div>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+                <ul class="navbar-nav">
                     @if (Auth::guest())
-                        <li><a href="{{ url('/login') }}">Login</a></li>
+                        <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
                         @if (env('ALLOW_REGISTRATION', false))
-                            <li><a href="{{ url('/register') }}">Register</a></li>
+                            <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
                         @endif
                     @else
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                {{ Auth::user()->name }} <span class="caret"></span>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                {{ Auth::user()->name }}
                             </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                                <a href="{{ route('logout') }}" class="dropdown-item"
+                                   onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
 
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="{{ url('/logout') }}"><i class="glyphicon glyphicon-log-out"></i>&nbsp;Logout</a></li>
-                            </ul>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                      style="display: none;">
+                                    {{ csrf_field() }}
+                                </form>
+                            </div>
                         </li>
                     @endif
                 </ul>
@@ -73,9 +78,8 @@
         @yield('content')
     </div>
 
-    <!-- JavaScripts -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    @yield('scripts')
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}"></script>
+@yield('scripts')
 </body>
 </html>
