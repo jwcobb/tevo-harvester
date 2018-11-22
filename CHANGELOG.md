@@ -1,5 +1,17 @@
 # TEvo Harvester Changelog
 
+## 3.0.1 (November 22, 2018)
+- Improve output for `harvester:status` command
+
+## 3.0.0 (November 15, 2018)
+- Upgrade to Laravel 5.7
+- Switch to Bootstrap 4
+- Switch gulpfile.js→webpack.mix.js
+- Remove `laravelcollective/html`
+- Switch glyphicons→[Zondicons](https://www.zondicons.com)
+- Add [Laravel Telescope](https://laravel.com/docs/5.7/telescope)
+- Work around negative `popularity_score` and `long_term_popularity_score` for events
+
 ## 2.0.1 (September 20, 2017)
 - Fixes error `StoresFromApi::deleteFromApi()` thanks to (@ujash for the pull request)
 

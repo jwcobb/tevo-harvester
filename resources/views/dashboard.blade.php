@@ -33,7 +33,7 @@
                     @if ($action->last_run_at != null)
                         <td>@lastrundiff($action->last_run_at)</td>
                     @else
-                        <td>Not yet run</td>
+                        <td>Never</td>
                     @endif
                     <td>{{ $action->scheduler_frequency_method }}</td>
                     <td>{{ $action->ping_before_url }}</td>

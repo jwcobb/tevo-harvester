@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Tevo\Harvest;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Tevo\Harvest;
 
 class ShowHarvesterStatusCommand extends Command
 {
@@ -42,21 +42,18 @@ class ShowHarvesterStatusCommand extends Command
      */
     public function handle()
     {
-        $harvests = Harvest::orderBy('resource', 'asc')->orderBy('action', 'asc')->get(['resource', 'action', 'last_run_at']);
-        foreach ($harvests as $harvest) {
-            $lastRunAt = 'Not yet run';
-            if ($harvest->last_run_at != null) {
-                $lastRunAt = $harvest->last_run_at . ' (' . $harvest->last_run_at->diffForHumans() . ')';
-            }
-            $data[] = [
-                $harvest->resource,
-                $harvest->action,
-                $lastRunAt,
-            ];
-        }
+        $columns = [
+            'Resource'    => 'resource',
+            'Action'      => 'action',
+            'Last Run'    => 'last_run_at',
+            'Scheduled'   => 'scheduler_frequency_method',
+            'Ping Before' => 'ping_before_url',
+            'Ping After'  => 'then_ping_url',
+        ];
+        $harvests = Harvest::orderBy('resource', 'asc')
+            ->orderBy('action', 'asc')
+            ->get(array_values($columns));
 
-        $headers = ['Resource', 'Action', 'Last Run'];
-
-        $this->table($headers, $data);
+        $this->table(array_keys($columns), $harvests);
     }
 }
