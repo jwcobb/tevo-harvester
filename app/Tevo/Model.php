@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class Model extends BaseModel
 {
-    use SoftDeletes, NullableFields;
+    use SoftDeletes;
 
     /**
      * The attributes that are not mass assignable.

@@ -3,7 +3,6 @@
 use App\Events\ItemWasDeleted;
 use App\Events\ItemWasStored;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Event as EventFacade;
 
 class Office extends Model
 {
@@ -162,7 +161,7 @@ class Office extends Model
             if (!in_array($emailAddress->email_address, $activeEmailAddresses)) {
                 // If it isn't in the array then it is no longer active, kill it.
                 if ($emailAddress->delete()) {
-                    EventFacade::fire(new ItemWasDeleted($emailAddress));
+                    event(new ItemWasDeleted($emailAddress));
                 }
             } else {
                 // Otherwise unset() it so that we're left with any
@@ -180,7 +179,7 @@ class Office extends Model
                 'email_address' => strtolower($email_address),
             ])
             ) {
-                EventFacade::fire(new ItemWasStored($newEmailAddress));
+                event(new ItemWasStored($newEmailAddress));
             }
         }
         unset($email_address);
@@ -196,7 +195,7 @@ class Office extends Model
             if (!in_array($hour->id, array_column($activeHours, 'id'))) {
                 // If it isn't in the array then it is no longer active, kill it.
                 if ($hour->delete()) {
-                    EventFacade::fire(new ItemWasDeleted($hour));
+                    event(new ItemWasDeleted($hour));
                 }
             } else {
                 // Otherwise unset() it so that we're left with any
@@ -219,7 +218,7 @@ class Office extends Model
                 $officeHour->close = Carbon::parse($hour['close'])->toTimeString();
 
                 if ($officeHour->save()) {
-                    EventFacade::fire(new ItemWasStored($officeHour));
+                    event(new ItemWasStored($officeHour));
                 }
             }
         }

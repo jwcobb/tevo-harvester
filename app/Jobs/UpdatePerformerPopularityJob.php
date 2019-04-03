@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Event;
 use App\Events\ResourceUpdateWasCompleted;
 use App\Tevo\Harvest;
+use Carbon\Carbon;
 use TicketEvolution\Laravel\TEvoFacade as Tevo;
 
 class UpdatePerformerPopularityJob extends Job
@@ -74,7 +73,7 @@ class UpdatePerformerPopularityJob extends Job
 
         // Only if this is the last Category to update fire the Event
         if ($this->settings['category_id'] === $this->last_category_id) {
-            Event::fire(new ResourceUpdateWasCompleted($this->harvest, $this->startTime));
+            event(new ResourceUpdateWasCompleted($this->harvest, $this->startTime));
         }
     }
 

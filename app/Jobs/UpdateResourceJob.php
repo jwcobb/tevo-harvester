@@ -2,10 +2,9 @@
 
 namespace App\Jobs;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Event;
 use App\Events\ResourceUpdateWasCompleted;
 use App\Tevo\Harvest;
+use Carbon\Carbon;
 use TicketEvolution\Laravel\TEvoFacade as Tevo;
 
 class UpdateResourceJob extends Job
@@ -58,7 +57,7 @@ class UpdateResourceJob extends Job
             $item = call_user_func($this->harvest->model_class . '::storeFromApi', $result);
         }
 
-        Event::fire(new ResourceUpdateWasCompleted($this->harvest, $this->startTime));
+        event(new ResourceUpdateWasCompleted($this->harvest, $this->startTime));
     }
 
 
@@ -84,6 +83,7 @@ class UpdateResourceJob extends Job
                 unset($options['updated_at.gte']);
             }
 
+            echo 'Fetching page ' . $thisPage . PHP_EOL;
             $results = $apiClient::{$this->harvest->library_method}($options);
 
             $thisPage = (!empty($results[$this->harvest->resource])) ? ++$thisPage : false;
