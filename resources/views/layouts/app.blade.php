@@ -60,7 +60,7 @@
                 <ul class="navbar-nav">
                     @if (Auth::guest())
                         <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
-                        @if (env('ALLOW_REGISTRATION', false))
+                        @if (config('app.allow_registration', false))
                             <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
                         @endif
                     @else
