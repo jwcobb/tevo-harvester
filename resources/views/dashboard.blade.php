@@ -5,7 +5,7 @@
 
     <p>TEvo Harvester can be used to populate local database tables with a cache of the Ticket Evolution data. If
         you choose to do this then you should be sure to run each of these scripts at least daily.</p>
-    <p>To make it simple, you can use the <a href="http://laravel.com/docs/5.7/scheduling">Laravel Scheduler</a> to run these commands automatically. Just be sure to <a href="http://laravel.com/docs/5.7/scheduling#introduction">add the Laravel Scheduler to your <code>crontab</code></a>.</p>
+    <p>To make it simple, you can use the <a href="http://laravel.com/docs/{{ $laravelMinorVersion }}/scheduling">Laravel Scheduler</a> to run these commands automatically. Just be sure to <a href="http://laravel.com/docs/{{ $laravelMinorVersion }}/scheduling#introduction">add the Laravel Scheduler to your <code>crontab</code></a>.</p>
 
     <h2>Status of Harvests based upon <i>last_run_at</i> date</h2>
     <table class="table table-striped table-bordered table-hover">

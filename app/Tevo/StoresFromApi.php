@@ -3,7 +3,6 @@
 use App\Events\ItemWasDeleted;
 use App\Events\ItemWasStored;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Event as EventFacade;
 
 trait StoresFromApi
 {
@@ -15,6 +14,7 @@ trait StoresFromApi
      * @param $result
      *
      * @return static
+     * @throws \Exception
      */
     public static function storeFromApi($result)
     {
@@ -29,7 +29,7 @@ trait StoresFromApi
 
             if ($item->save()) {
                 // Fire an event if an INSERT or UPDATE was actually performed
-                EventFacade::fire(new ItemWasStored($item));
+                event(new ItemWasStored($item));
             }
 
             $item = self::postSave($item, $result);
@@ -43,9 +43,10 @@ trait StoresFromApi
      * If an item is is already stored locally delete() that item.
      * Otherwise, just return null.
      *
-     * @param $result
+     * @param array $result
      *
      * @return static|null
+     * @throws \Exception
      */
     protected static function deleteFromApi(array $result)
     {
@@ -70,7 +71,7 @@ trait StoresFromApi
             $item->saveThenDelete();
 
             // Fire an event that it was deleted
-            EventFacade::fire(new ItemWasDeleted($item));
+            event(new ItemWasDeleted($item));
         }
 
         return $item;

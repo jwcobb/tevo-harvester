@@ -2,7 +2,6 @@
 
 use App\Events\ItemWasStored;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Event as EventFacade;
 
 class Event extends Model
 {
@@ -149,7 +148,7 @@ class Event extends Model
             $performance->{$performance->getDeletedAtColumn()} = null;
 
             if ($performance->save()) {
-                EventFacade::fire(new ItemWasStored($performance));
+                event(new ItemWasStored($performance));
             }
         }
         unset($performance);

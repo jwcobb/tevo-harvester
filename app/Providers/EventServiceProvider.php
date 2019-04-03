@@ -2,7 +2,14 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Event;
+use App\Events\ItemWasDeleted;
+use App\Events\ItemWasStored;
+use App\Events\ResourceUpdateWasCompleted;
+use App\Listeners\RecordItemDelete;
+use App\Listeners\RecordItemUpdate;
+use App\Listeners\RecordResourceUpdateLastRunAt;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -13,16 +20,20 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        \App\Events\ItemWasStored::class => [
-            \App\Listeners\RecordItemUpdate::class,
+        Registered::class                 => [
+            SendEmailVerificationNotification::class,
         ],
-        \App\Events\ItemWasDeleted::class => [
-            \App\Listeners\RecordItemDelete::class,
+        ItemWasStored::class              => [
+            RecordItemUpdate::class,
         ],
-        \App\Events\ResourceUpdateWasCompleted::class => [
-            \App\Listeners\RecordResourceUpdateLastRunAt::class,
+        ItemWasDeleted::class             => [
+            RecordItemDelete::class,
+        ],
+        ResourceUpdateWasCompleted::class => [
+            RecordResourceUpdateLastRunAt::class,
         ],
     ];
+
 
     /**
      * Register any events for your application.

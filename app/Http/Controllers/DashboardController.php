@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Tevo\Harvest;
+use Illuminate\Support\Facades\App;
 
 class DashboardController extends Controller
 {
@@ -30,6 +31,9 @@ class DashboardController extends Controller
 
         $resources = $harvests->unique('resource');
 
-        return view('dashboard', ['harvests' => $harvestsGroupedByResource, 'resources' => $resources]);
+        $laravelMinorVersion = preg_replace('/(\d\.\d+).+/', '$1', App::VERSION());
+
+        return view('dashboard',
+            ['harvests' => $harvestsGroupedByResource, 'resources' => $resources, 'laravelMinorVersion' => $laravelMinorVersion]);
     }
 }
