@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
  * Load the Authentication routes.
  * Use an .env var to decide if registration is allowed
  */
-Auth::routes(['register' => config('ALLOW_REGISTRATION', false)]);
+Auth::routes(['register' => config('app.allow_registration', false)]);
 
 Route::get('home', [
     'as'   => 'dashboard',
