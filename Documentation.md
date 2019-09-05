@@ -2,7 +2,7 @@
 
 ## Installation
 ### Server Requirements
-This project is based on Laravel 5.2 and therefore shares the same [server requirements](https://laravel.com/docs/5.2#installation) plus the additional requirement of a MySQL-like database such as [Percona Server](https://www.percona.com/software/mysql-database/percona-server), [MariaDB](https://mariadb.org/), [Amazon Aurora](https://aws.amazon.com/rds/aurora/), or [MySQL](https://www.mysql.com/products/). Versions equivalent to MySQL 5.6 or higher are recommended.
+This project is based on Laravel 5.8 and therefore shares the same [server requirements](https://laravel.com/docs/5.8#server-requirements) plus the additional requirement of a MySQL-like database such as [Percona Server](https://www.percona.com/software/mysql-database/percona-server), [MariaDB](https://mariadb.org/), [Amazon Aurora](https://aws.amazon.com/rds/aurora/), or [MySQL](https://www.mysql.com/products/). Versions equivalent to MySQL 5.6 or higher are recommended.
 
 ### Installing TEvo Harvester
 Like almost all modern PHP software, TEvo Harvester utilizes [Composer](http://getcomposer.org/) to manage its dependencies. So, before using TEvo Harvester, make sure you have Composer installed on your machine.
@@ -40,6 +40,6 @@ $ php artisan harvester:update performers --action=active
 ```
 
 ### Scheduling Updates
-You can use the [Laravel Scheduler](https://laravel.com/docs/5.4/scheduling) to run these commands automatically at preset times. Just be sure to [add the Laravel Scheduler to your `crontab`](http://laravel.com/docs/5.4/scheduling#introduction).
+You can use the [Laravel Scheduler](https://laravel.com/docs/5.8/scheduling#scheduling-artisan-commands) to run these commands automatically at preset times. Just be sure to [add the Laravel Scheduler to your `crontab`](https://laravel.com/docs/5.8/scheduling#introduction).
 
 Each Harvest already has a suggested update interval assigned to it, but using the Dashboard you can edit the schedule and even include URLs to ping before and after updates in case you wish to use a [Dead Man’s Switch](https://en.wikipedia.org/wiki/Dead_man%27s_switch) such as [Pushmon](http://www.pushmon.com/) or [Dead Man’s Snitch](https://deadmanssnitch.com/) to ensure your updates are running as desired.
