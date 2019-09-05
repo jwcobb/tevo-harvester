@@ -67,6 +67,14 @@ class Kernel extends ConsoleKernel
                         ->withoutOverlapping();
                 }
             }
+
+            /**
+             * Soft-delete any past events and performances
+             */
+            $schedule->command('harvester:mark-past-events-deleted')
+                ->daily()
+                ->withoutOverlapping();
+
         } catch (\Exception $e) {
             // Hopefully we are only here because we are migrating,
             // which does not like the database query above.
