@@ -43,10 +43,13 @@ class MarkPastEventsDeleted extends Command
     public function handle()
     {
         $now = new Carbon();
-        $eventCounts = DB::table('events')->where('occurs_at', '<', $now)->whereNull('deleted_at')->update(['deleted_at' => $now]);
+        $endOfYesterday = new Carbon('midnight today');
+        $endOfYesterday->subSecond();
+
+        $eventCounts = DB::table('events')->where('occurs_at', '<=', $endOfYesterday)->whereNull('deleted_at')->update(['deleted_at' => $now]);
         $this->info($eventCounts . ' Events were soft-deleted.');
 
-        $performancesCounts = DB::table('performances')->where('occurs_at', '<', $now)->whereNull('deleted_at')->update(['deleted_at' => $now]);
+        $performancesCounts = DB::table('performances')->where('occurs_at', '<=', $endOfYesterday)->whereNull('deleted_at')->update(['deleted_at' => $now]);
         $this->info($performancesCounts . ' Performances were soft-deleted.');
 
     }
