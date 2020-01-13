@@ -38,7 +38,7 @@ class MakePopularityScoresSigned extends Migration
 
         DB::statement('ALTER TABLE `performers` CHANGE COLUMN `popularity_score` `popularity_score` DECIMAL(7, 6) NOT NULL DEFAULT 0.000000  COMMENT \'\' AFTER `category_id`;');
 
-        DB::statement('ALTER TABLE `tevoharvester`.`venues` CHANGE COLUMN `popularity_score` `popularity_score` DECIMAL(7, 6) NOT NULL DEFAULT 0.000000  COMMENT \'\' AFTER `slug`;');
+        DB::statement('ALTER TABLE `venues` CHANGE COLUMN `popularity_score` `popularity_score` DECIMAL(7, 6) NOT NULL DEFAULT 0.000000  COMMENT \'\' AFTER `slug`;');
     }
 
 
