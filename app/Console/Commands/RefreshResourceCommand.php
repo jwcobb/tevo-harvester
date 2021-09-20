@@ -2,11 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use App\Jobs\UpdateResourceJob;
-use App\Tevo\Harvest;
 
 class RefreshResourceCommand extends Command
 {
@@ -33,50 +30,16 @@ class RefreshResourceCommand extends Command
 
 
     /**
-     * Create a new command instance.
-     *
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-
-    /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
-        $resource = $this->argument('resource');
-        $action = $this->option('action');
-        $startPage = (int)$this->option('startPage');
-        $perPage = (int)$this->option('perPage');
-
-        try {
-            $harvest = Harvest::where('resource', $resource)->where('action', $action)->firstOrFail();
-        } catch (\Exception $e) {
-            $this->info('There is no existing action for updating ' . ucwords($action) . ' ' . ucwords($resource) . '.');
-            exit('Nothing was updated.');
-        }
-
-        $options = [
-            'startPage' => $startPage,
-            'perPage'   => $perPage,
-            'lastRun'   => new Carbon('2001-01-01')
-        ];
-
-        $job = new UpdateResourceJob(
-            $harvest,
-            $options
-        );
-
-        $message = 'Fully refreshing ' . $action . ' ' . $resource . ' ' . $perPage . ' at a time';
-        if (isset($lastRun)) {
-            $message .= ' with entries updated since ' . $lastRun->format('r');
-        }
-        $this->info($message);
-        $this->dispatch($job);
+        $this->call('harvester:update', [
+            'resource'    => $this->argument('resource'),
+            '--action'    => $this->option('action'),
+            '--startPage' => $this->option('startPage'),
+            '--perPage'   => $this->option('perPage'),
+            '--lastRunAt' => '2001-01-01',
+        ]);
     }
 }

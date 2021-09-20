@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Events\ResourceUpdateWasCompleted;
-use App\Tevo\Harvest;
+use App\Models\Tevo\Harvest;
 use Carbon\Carbon;
 use TicketEvolution\Laravel\TEvoFacade as Tevo;
 

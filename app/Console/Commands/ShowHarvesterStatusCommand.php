@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Tevo\Harvest;
+use App\Models\Tevo\Harvest;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 

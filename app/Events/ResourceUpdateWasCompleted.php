@@ -4,7 +4,7 @@ namespace App\Events;
 
 use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
-use App\Tevo\Harvest;
+use App\Models\Tevo\Harvest;
 
 class ResourceUpdateWasCompleted extends Event
 {
