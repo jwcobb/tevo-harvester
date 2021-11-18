@@ -12,7 +12,7 @@
         "beyondcode/laravel-self-diagnosis": "^1.2",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.0",
-        "laravel/framework": "5.8.*",
+        "laravel/framework": "6.20.*",
         "laravel/tinker": "^1.0",
         "nothingworks/blade-svg": "^0.3.1",
         "ticketevolution/ticketevolution-php": "^4.2"
