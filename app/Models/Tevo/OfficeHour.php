@@ -18,10 +18,18 @@ class OfficeHour extends Model
         'closed',
         'open',
         'close',
-        'office_url',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
+    ];
+
+    protected $casts = [
+        'id'          => 'integer',
+        'office_id'   => 'integer',
+        'day_of_week' => 'integer',
+        'closed'      => 'boolean',
+        'open'        => 'datetime:H:i',
+        'close'       => 'datetime:H:i',
+        'created_at'  => 'datetime',
+        'updated_at'  => 'datetime',
+        'deleted_at'  => 'datetime',
     ];
 
 

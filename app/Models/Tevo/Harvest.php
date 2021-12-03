@@ -26,10 +26,19 @@ class Harvest extends Model
         'last_run_at',
     ];
 
-    protected $dates = [
-        'last_run_at',
-        'created_at',
-        'updated_at',
+    protected $casts = [
+        'id'                         => 'integer',
+        'resource'                   => 'string',
+        'action'                     => 'string',
+        'library_method'             => 'string',
+        'model_class'                => 'string',
+        'scheduler_name'             => 'string',
+        'scheduler_frequency_method' => 'string',
+        'ping_before_url'            => 'string',
+        'then_ping_url'              => 'string',
+        'last_run_at'                => 'datetime',
+        'created_at'                 => 'datetime',
+        'updated_at'                 => 'datetime',
     ];
 
 

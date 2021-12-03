@@ -4,7 +4,6 @@ namespace App\Models\Tevo;
 
 use App\Events\ItemWasDeleted;
 use App\Events\ItemWasStored;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
 trait StoresFromApi
@@ -16,57 +15,52 @@ trait StoresFromApi
      */
     public static function storeFromApi($result): ?static
     {
-        if (!empty($result['deleted_at'])) {
-            $item = self::deleteFromApi($result);
-        } else {
-            $result = self::mutateApiResult($result);
+        if (! empty($result['deleted_at'])) {
+            $item = static::withTrashed()->findOrNew((int) $result['id']);
+            if ($item->exists === false) {
+                /**
+                 * A matching item doesn't exist in the database so do nothing
+                 * because the data received with deleted items is often too
+                 * incomplete to properly save and what really matters is ensuring
+                 * the item is deleted (or doesn't exist).
+                 */
+            } elseif ($item->deleted_at === null) {
+                /**
+                 * A matching item was found and it has not yet been deleted.
+                 * Set the tevo_deleted_at and quietly save before deleting.
+                 */
+                $item->tevo_deleted_at = $result['deleted_at'];
+                $item->saveQuietly();
+                $item->delete();
+                Log::debug(__METHOD__.': Item was deleted', $item->toArray());
 
-            $item = self::findOrNewWithTrashed((int) $result['id']);
-
-            $item->fill($result);
-
-            if ($item->save()) {
-                Log::info('Item was saved', $item->toArray());
-                // Fire an event if an INSERT or UPDATE was actually performed
-                event(new ItemWasStored($item));
+                event(new ItemWasDeleted($item));
             }
-
-            $item = self::postSave($item, $result);
-        }
-
-        return $item;
-    }
-
-
-    /**
-     * If an item is already stored locally delete() that item.
-     * Otherwise, just return null.
-     */
-    protected static function deleteFromApi(array $result)
-    {
-        $item = static::find((int) $result['id']);
-        /**
-         * If there is no a matching item there is nothing to do.
-         * Either this item was already deleted or it was never INSERTed.
-         * If item was never INSERTed do not INSERT now because the data
-         * received with deleted items is often too incomplete to properly save.
-         */
-        if ($item) {
-            $item->tevo_deleted_at = new Carbon($result['deleted_at']);
-
             /**
-             * If we have a deleted_at value then we are deleting the item
-             * but we need to ensure that we save() it first to record some
-             * data and to ensure it actually even exists. We do this via
-             * the saveThenDelete() method which does not trigger any of the
-             * saving events (but it does trigger the deleting events).
+             * Just noting that if the item exists and deleted_at is not null
+             * then it has already been marked as deleted and there is nothing to do.
              */
-            $item->saveThenDelete();
-
-            // Fire an event that it was deleted
-            event(new ItemWasDeleted($item));
+            return $item;
         }
+
+
+        $result = self::mutateApiResult($result);
+
+        $item = static::withTrashed()->findOrNew((int) $result['id']);
+        $item->fill($result);
+
+        // Make sure this item was previously deleted it is no longer deleted
+        $item->{$item->getDeletedAtColumn()} = null;
+
+        if ($item->save()) {
+            Log::debug(__METHOD__.': Item was saved', $item->toArray());
+            // Fire an event if an INSERT or UPDATE was actually performed
+            event(new ItemWasStored($item));
+        }
+
+        self::postSave($item, $result);
 
         return $item;
     }
+
 }

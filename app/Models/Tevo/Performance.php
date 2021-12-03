@@ -19,19 +19,21 @@ class Performance extends Model
         'event_name',
         'occurs_at',
         'venue_id',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
-    ];
-
-    protected $dates = [
-        'occurs_at',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
-        'created_at',
         'updated_at',
         'deleted_at',
+    ];
+
+    protected $casts = [
+        'id'           => 'integer',
+        'event_id'     => 'integer',
+        'performer_id' => 'integer',
+        'primary'      => 'boolean',
+        'event_name'   => 'string',
+        'occurs_at'    => 'datetime',
+        'venue_id'     => 'integer',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
+        'deleted_at'   => 'datetime',
     ];
 
 

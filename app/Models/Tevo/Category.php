@@ -26,6 +26,21 @@ class Category extends Model
         'tevo_deleted_at',
     ];
 
+    protected $casts = [
+        'id'              => 'integer',
+        'parent_id'       => 'integer',
+        'name'            => 'string',
+        'url'             => 'string',
+        'slug'            => 'string',
+        'slug_url'        => 'string',
+        'tevo_created_at' => 'datetime',
+        'tevo_updated_at' => 'datetime',
+        'tevo_deleted_at' => 'datetime',
+        'created_at'      => 'datetime',
+        'updated_at'      => 'datetime',
+        'deleted_at'      => 'datetime',
+    ];
+
 
     /**
      * Mutate the $result as necessary.

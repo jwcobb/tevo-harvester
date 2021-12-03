@@ -2,12 +2,8 @@
 
 namespace App\Models\Tevo;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Event as EventFacade;
-use App\Events\ItemWasDeleted;
-use App\Events\ItemWasStored;
 
 /**
  * @mixin IdeHelperConfiguration
@@ -32,6 +28,25 @@ class Configuration extends Model
         'tevo_created_at',
         'tevo_updated_at',
         'tevo_deleted_at',
+    ];
+
+    protected $casts = [
+        'id'                       => 'integer',
+        'venue_id'                 => 'integer',
+        'name'                     => 'string',
+        'primary'                  => 'boolean',
+        'general_admission'        => 'boolean',
+        'capacity'                 => 'integer',
+        'url'                      => 'string',
+        'seating_chart_url_medium' => 'string',
+        'seating_chart_url_large'  => 'string',
+        'configuration_url'        => 'string',
+        'tevo_created_at'          => 'datetime',
+        'tevo_updated_at'          => 'datetime',
+        'tevo_deleted_at'          => 'datetime',
+        'created_at'               => 'datetime',
+        'updated_at'               => 'datetime',
+        'deleted_at'               => 'datetime',
     ];
 
 

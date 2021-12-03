@@ -15,10 +15,15 @@ class OfficeEmailAddress extends Model
         'id',
         'office_id',
         'email_address',
-        'url',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
+    ];
+
+    protected $casts = [
+        'id'            => 'integer',
+        'office_id'     => 'integer',
+        'email_address' => 'string',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
+        'deleted_at'    => 'datetime',
     ];
 
 

@@ -1,12 +1,13 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Console\Commands;
 
 use App\Events\ResourceUpdateWasCompleted;
-use App\Jobs\UpdatePerformerPopularityJob;
-use App\Jobs\UpdateResourceJob;
 use App\Models\Tevo\Category;
 use App\Models\Tevo\Harvest;
+use Exception;
+use Generator;
 use GuzzleHttp\Command\Result;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,6 +91,10 @@ class UpdateResourceCommand extends Command
      */
     public function handle(): void
     {
+//        \DB::listen(function ($sql) {
+//            var_dump($sql->sql);
+//        });
+
         $this->startPage = (int) $this->option('startPage');
         $this->perPage = (int) $this->option('perPage');
 
@@ -120,13 +125,18 @@ class UpdateResourceCommand extends Command
         $this->info($message);
         Log::info($message);
 
-        if (in_array($this->resource, self::USE_CURSOR_PAGINATION, true)) {
+        /**
+         * The events/deleted endpoint returns a 422 Unprocessable Entity
+         * {"error":"Invalid Parameters","message":"order_by is not allowed"}
+         * if an order_by is in the request.
+         */
+        if ($this->action !== 'deleted' && in_array($this->resource, self::USE_CURSOR_PAGINATION, true)) {
             foreach ($this->getItemsFromApiWithCursorPagination() as $result) {
-                $item = call_user_func($this->harvest->model_class.'::storeFromApi', $result);
+                call_user_func($this->harvest->model_class.'::storeFromApi', $result);
             }
         } else {
             foreach ($this->getItemsFromApiWithStandardPagination() as $result) {
-                $item = call_user_func($this->harvest->model_class.'::storeFromApi', $result);
+                call_user_func($this->harvest->model_class.'::storeFromApi', $result);
             }
         }
 
@@ -148,8 +158,8 @@ class UpdateResourceCommand extends Command
          * UpdatePerformerPopularityJob for each one.
          */
         try {
-            $categories = Category::active()->orderBy('id')->get();
-        } catch (\Exception $e) {
+            $categories = Category::orderBy('id')->get();
+        } catch (Exception) {
             exit('There are no categories yet. Please ensure you have run the Active Categories job.');
         }
 
@@ -159,12 +169,13 @@ class UpdateResourceCommand extends Command
 
 
         $progressBar = $this->output->createProgressBar($categories->count());
-        $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
+        $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%'.PHP_EOL);
         $progressBar->start();
         foreach ($categories as $category) {
             foreach ($this->getPopularPerformersFromApiByCategory($category) as $result) {
-                $item = call_user_func($this->harvest->model_class . '::storeFromApi', $result);
+                call_user_func($this->harvest->model_class.'::storeFromApi', $result);
             }
+            /** @noinspection DisconnectedForeachInstructionInspection */
             $progressBar->advance();
         }
         $progressBar->finish();
@@ -178,7 +189,7 @@ class UpdateResourceCommand extends Command
     {
         try {
             $this->harvest = Harvest::where('resource', $this->resource)->where('action', $this->action)->firstOrFail();
-        } catch (\Exception $e) {
+        } catch (Exception) {
             exit('There is no existing action for updating '.ucwords($this->action).' '.ucwords($this->resource).'.');
         }
     }
@@ -188,7 +199,7 @@ class UpdateResourceCommand extends Command
     {
         // If a lastRun was given use that
         // OR if this has never been run before use 2001-01-01
-        if (!empty($this->option('lastRunAt'))) {
+        if (! empty($this->option('lastRunAt'))) {
             $this->lastRunAt = new Carbon($this->option('lastRunAt'));
         } else {
             $this->lastRunAt = $this->harvest->last_run_at ?? new Carbon('2001-01-01');
@@ -200,30 +211,24 @@ class UpdateResourceCommand extends Command
      * Generator to return individual items from the API while paging through results
      * using standard pagination.
      */
-    private function getItemsFromApiWithStandardPagination(): ?\Generator
+    private function getItemsFromApiWithStandardPagination(): ?Generator
     {
         $thisPage = $this->startPage;
 
-        $progressBar = $this->output->createProgressBar(0);
-        $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%');
+        $progressBar = $this->output->createProgressBar();
+        $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%'.PHP_EOL);
 
-        while ($thisPage !== false) {
-            $options = [
-                'page'           => $thisPage,
-                'per_page'       => $this->perPage,
-                'updated_at.gte' => $this->lastRunAt->toIso8601String(),
-            ];
-
-            // "deleted" actions use "deleted_at" instead of "updated_at"
-            if ($this->harvest->action === 'deleted') {
-                $options['deleted_at.gte'] = $options['updated_at.gte'];
-                unset($options['updated_at.gte']);
+        while ($thisPage > 0) {
+            if (isset($lastPage)) {
+                $progressBar->advance();
             }
+
+            $options = $this->getApiRequestOptions($thisPage, $this->lastRunAt);
 
             $results = $this->fetchApiResults($options);
 
 
-            if (!isset($lastPage)) {
+            if (! isset($lastPage)) {
                 if ($results['total_entries'] === 0) {
                     $this->line('There are no '.$this->harvest->action.' '.$this->resource.' that have been updated since '.$this->lastRunAt->toIso8601String().'.');
                     return;
@@ -250,7 +255,7 @@ class UpdateResourceCommand extends Command
                  * is not paginated and would loop endlessly because "page" and "per_page" is ignored
                  * by the categories endpoint.
                  */
-                $thisPage = false;
+                $thisPage = 0;
                 $progressBar->finish();
             } else {
                 ++$thisPage;
@@ -276,38 +281,27 @@ class UpdateResourceCommand extends Command
      * a second time. Since there are no controls in the API to add a secondary value like id this will
      * have to do.
      */
-    private function getItemsFromApiWithCursorPagination(): ?\Generator
+    private function getItemsFromApiWithCursorPagination(): ?Generator
     {
         $updatedAtStart = $this->lastRunAt;
         $thisPage = $this->startPage;
 
-        $progressBar = $this->output->createProgressBar(0);
-        $progressBar->setFormat(" %current%/%max%ish [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%\n  %message%");
+        $progressBar = $this->output->createProgressBar();
+        $progressBar->setFormat(" %current%/%max%ish [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s% %memory:6s%\n  %message%".PHP_EOL);
         $progressBar->setMessage('The total number of pages is only an estimate.');
 
 
-        while ($thisPage !== false) {
-            $options = [
-                'page'           => $thisPage,
-                'per_page'       => $this->perPage,
-                'updated_at.gte' => $updatedAtStart->toIso8601String(),
-                'order_by'       => $this->harvest->resource.'.updated_at ASC',
-            ];
-
-            // "deleted" actions use "deleted_at" instead of "updated_at"
-            if ($this->harvest->action === 'deleted') {
-                $options['deleted_at.gte'] = $options['updated_at.gte'];
-                unset($options['updated_at.gte']);
-                if ($this->resource === 'events') {
-                    // order_by is not allowed in deleted events request
-                    unset($options['order_by']);
-                }
+        while ($thisPage > 0) {
+            if (isset($lastPage)) {
+                $progressBar->advance();
             }
+
+            $options = $this->getApiRequestOptions($thisPage, $updatedAtStart);
+            $options['order_by'] = $this->harvest->resource.'.updated_at ASC';
 
             $results = $this->fetchApiResults($options);
 
-
-            if (!isset($lastPage)) {
+            if (! isset($lastPage)) {
                 if ($results['total_entries'] === 0) {
                     $this->line('There are no '.$this->harvest->action.' '.$this->resource.' that have been updated since '.$this->lastRunAt->toIso8601String().'.');
                     return;
@@ -317,7 +311,6 @@ class UpdateResourceCommand extends Command
                 $progressBar->start($lastPage);
             }
 
-            $progressBar->advance();
 
 
             foreach ($results[$this->harvest->resource] as $result) {
@@ -331,14 +324,14 @@ class UpdateResourceCommand extends Command
              * Additionally, the categories resource is not paginated and
              * therefore will loop endlessly if we don’t forcibly exit.
              */
-            if (empty($results[$this->harvest->resource] || $this->harvest->resource === 'categories')) {
-                $thisPage = false;
+            if ($results['total_entries'] < $results['per_page'] || empty($results[$this->harvest->resource])) {
+                $thisPage = 0;
                 $progressBar->finish();
             } else {
                 /**
                  * If the last result from the current page has the same updated_at
                  * as the first one ($updatedAtStart) then we need to get another page
-                 * because it looks like all of the current page of results have the same updated_at.
+                 * because it looks like all the items on the current page have the same updated_at.
                  *
                  * If the last result updated_at is different use that as the new $updatedAtStart
                  * and ensure we are fetching page 1.
@@ -348,6 +341,7 @@ class UpdateResourceCommand extends Command
                 } else {
                     $lastResultCreatedAt = Carbon::parse($result['updated_at']);
                 }
+
                 if ($updatedAtStart->equalTo($lastResultCreatedAt)) {
                     ++$thisPage;
                 } else {
@@ -359,15 +353,15 @@ class UpdateResourceCommand extends Command
     }
 
 
-    private function getPopularPerformersFromApiByCategory(Category $category): \Generator
+    private function getPopularPerformersFromApiByCategory(Category $category): Generator
     {
         $options = [
-            'startPage'                 => (int)1,
-            'perPage'                   => (int)100,
+            'startPage'                 => 1,
+            'perPage'                   => 100,
             'order_by'                  => 'performers.popularity_score DESC',
-            'only_with_upcoming_events' => (int)1,
-            'category_tree'             => (int)1,
-            'category_id'               => (int)$category->id,
+            'only_with_upcoming_events' => 1,
+            'category_tree'             => 1,
+            'category_id'               => $category->id,
         ];
 
         $results = $this->fetchApiResults($options);
@@ -393,10 +387,10 @@ class UpdateResourceCommand extends Command
             Log::debug(__METHOD__.': API results retrieved.', [
                 'clientLibraryMethod' => $this->harvest->library_method,
                 'options'             => $options,
-                'results'             => $results,
+//                'results'             => $results,
             ]);
             return $results;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error(__METHOD__.': Error retrieving API results.', [
                 'clientLibraryMethod' => $this->harvest->library_method,
                 'options'             => $options,
@@ -404,5 +398,26 @@ class UpdateResourceCommand extends Command
             ]);
             exit('Error retrieving API results.'.$e->getMessage());
         }
+    }
+
+
+    private function getApiRequestOptions(int $thisPage, \Carbon\Carbon $timestamp)
+    {
+        $options = [
+            'page'     => $thisPage,
+            'per_page' => $this->perPage,
+        ];
+
+        if ($this->harvest->action === 'deleted') {
+            $options['deleted_at.gte'] = $timestamp->toIso8601String();
+        } else {
+            $options['updated_at.gte'] = $timestamp->toIso8601String();
+        }
+
+//        if ($this->resource !== 'events') {
+//            $options['order_by'] = $this->harvest->resource.'.updated_at ASC';
+//        }
+
+        return $options;
     }
 }

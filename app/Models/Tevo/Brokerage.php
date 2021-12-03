@@ -3,7 +3,6 @@
 namespace App\Models\Tevo;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @mixin IdeHelperBrokerage
@@ -26,6 +25,21 @@ class Brokerage extends Model
         'tevo_deleted_at',
     ];
 
+    protected $casts = [
+        'id'              => 'integer',
+        'name'            => 'string',
+        'abbreviation'    => 'string',
+        'natb_member'     => 'boolean',
+        'url'             => 'string',
+        'logo'            => 'string',
+        'tevo_created_at' => 'datetime',
+        'tevo_updated_at' => 'datetime',
+        'tevo_deleted_at' => 'datetime',
+        'created_at'      => 'datetime',
+        'updated_at'      => 'datetime',
+        'deleted_at'      => 'datetime',
+    ];
+
 
     /**
      * Brokerages can have more than 1 Office.
@@ -37,7 +51,7 @@ class Brokerage extends Model
 
 
     /**
-     * Mutator to fix TEvo’s stupid default value by switching
+     * Mutator to change from TEvo’s default value by switching
      * /logos/original/missing.png to NULL
      */
     public function setLogoAttribute($value): void

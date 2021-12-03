@@ -19,10 +19,12 @@ class Kernel extends ConsoleKernel
         \App\Console\Commands\RefreshResourceCommand::class,
     ];
 
+
     /**
      * Define the application's command schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     *
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -45,24 +47,24 @@ class Kernel extends ConsoleKernel
                  * failure could still occur.
                  */
                 if ($harvest->ping_before_url !== null && $harvest->then_ping_url !== null) {
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
+                    $schedule->command('harvest:update '.$harvest->resource.' --action='.$harvest->action)
                         ->{$harvest->scheduler_frequency_method}()
                         ->withoutOverlapping()
                         ->pingBefore($harvest->ping_before_url)
                         ->thenPing($harvest->then_ping_url);
                 } elseif ($harvest->ping_before_url !== null && $harvest->then_ping_url === null) {
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
+                    $schedule->command('harvest:update '.$harvest->resource.' --action='.$harvest->action)
                         ->{$harvest->scheduler_frequency_method}()
                         ->withoutOverlapping()
                         ->pingBefore($harvest->ping_before_url);
                 } elseif ($harvest->ping_before_url === null && $harvest->then_ping_url !== null) {
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
+                    $schedule->command('harvest:update '.$harvest->resource.' --action='.$harvest->action)
                         ->{$harvest->scheduler_frequency_method}()
                         ->withoutOverlapping()
                         ->thenPing($harvest->then_ping_url);
                 } else {
                     // Both are null
-                    $schedule->command('harvest:update ' . $harvest->resource . ' --action=' . $harvest->action)
+                    $schedule->command('harvest:update '.$harvest->resource.' --action='.$harvest->action)
                         ->{$harvest->scheduler_frequency_method}()
                         ->withoutOverlapping();
                 }
@@ -80,6 +82,7 @@ class Kernel extends ConsoleKernel
             // which does not like the database query above.
         }
     }
+
 
     /**
      * Register the commands for the application.

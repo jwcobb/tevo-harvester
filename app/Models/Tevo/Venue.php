@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Venue extends Model
 {
-    use StoresFromApi;
+    use StoresFromApi, HasKeywords, HasStreetAddress, HasUpcomingEvents;
 
     protected $table = 'venues';
 
@@ -37,51 +37,45 @@ class Venue extends Model
         'tevo_deleted_at',
     ];
 
-
-    protected $dates = [
-        'upcoming_event_first',
-        'upcoming_event_last',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'id'                   => 'integer',
+        'name'                 => 'string',
+        'slug'                 => 'string',
+        'popularity_score'     => 'decimal:7',
+        'street_address'       => 'string',
+        'extended_address'     => 'string',
+        'locality'             => 'string',
+        'region'               => 'string',
+        'postal_code'          => 'string',
+        'country_code'         => 'string',
+        'latitude'             => 'decimal:17',
+        'longitude'            => 'decimal:17',
+        'keywords'             => 'string',
+        'upcoming_event_first' => 'datetime',
+        'upcoming_event_last'  => 'datetime',
+        'url'                  => 'string',
+        'slug_url'             => 'string',
+        'tevo_created_at'      => 'datetime',
+        'tevo_updated_at'      => 'datetime',
+        'tevo_deleted_at'      => 'datetime',
+        'created_at'           => 'datetime',
+        'updated_at'           => 'datetime',
+        'deleted_at'           => 'datetime',
     ];
 
 
     /**
-     * Mutate the $result as necessary.
-     * Be sure to run the parent::mutateApiResult() to get the common mutations.
+     * When deleting an Office deleted the related
+     * OfficeHours and OfficeEmailAddresses
      */
-    protected static function mutateApiResult(array $result): array
-    {
-        // Be sure to call the parent version for common mutations
-        $result = parent::mutateApiResult($result);
+    public static function boot() {
+        parent::boot();
 
-
-        /**
-         * Add custom mutations for this item type here
-         */
-        if (isset($result['address'])) {
-            $result['street_address'] = $result['address']['street_address'];
-            $result['extended_address'] = $result['address']['extended_address'];
-            $result['locality'] = $result['address']['locality'];
-            $result['region'] = $result['address']['region'];
-            $result['postal_code'] = $result['address']['postal_code'];
-            $result['country_code'] = $result['address']['country_code'];
-            $result['latitude'] = $result['address']['latitude'];
-            $result['longitude'] = $result['address']['longitude'];
-        }
-        unset($result['address']);
-
-        $result['upcoming_event_first'] = Carbon::parse($result['upcoming_events']['first']) ?? null;
-        $result['upcoming_event_last'] = Carbon::parse($result['upcoming_events']['last']) ?? null;
-        unset($result['upcoming_events']);
-
-        // Because sometimes popularity_score is NULL lets coerce those to zero
-        $result['popularity_score'] = (float) $result['popularity_score'];
-        return $result;
+        self::deleting(function($venue) {
+            $venue->configurations()->each(function($configuration) {
+                $configuration->delete();
+            });
+        });
     }
 
 
@@ -104,14 +98,28 @@ class Venue extends Model
 
 
     /**
-     * Mutator to nullify empty value.
+     * Mutate the $result as necessary.
+     * Be sure to run the parent::mutateApiResult() to get the common mutations.
      */
-    public function setKeywordsAttribute($value): void
+    protected static function mutateApiResult(array $result): array
     {
-        if (empty($value)) {
-            $this->attributes['keywords'] = null;
-        } else {
-            $this->attributes['keywords'] = $value;
+        // Be sure to call the parent version for common mutations
+        $result = parent::mutateApiResult($result);
+
+
+        /**
+         * Add custom mutations for this item type here
+         */
+        if (isset($result['address'])) {
+            $result = self::setStreetAddress($result);
         }
+
+        $result = self::setUpcomingEvents($result);
+
+
+        // Aometimes popularity_score is NULL. Coerce those to zero
+        $result['popularity_score'] = $result['popularity_score'] ?? 0;
+
+        return $result;
     }
 }

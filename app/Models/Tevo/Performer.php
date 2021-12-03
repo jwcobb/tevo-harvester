@@ -2,7 +2,6 @@
 
 namespace App\Models\Tevo;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -12,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Performer extends Model
 {
-    use StoresFromApi;
+    use StoresFromApi, HasKeywords, HasUpcomingEvents;
 
     protected $table = 'performers';
 
@@ -33,26 +32,30 @@ class Performer extends Model
         'tevo_deleted_at',
     ];
 
-
-    protected $dates = [
-        'upcoming_event_first',
-        'upcoming_event_last',
-        'tevo_created_at',
-        'tevo_updated_at',
-        'tevo_deleted_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
+    protected $casts = [
+        'id'                   => 'integer',
+        'name'                 => 'string',
+        'slug'                 => 'string',
+        'category_id'          => 'integer',
+        'popularity_score'     => 'decimal:7',
+        'venue_id'             => 'integer',
+        'keywords'             => 'string',
+        'upcoming_event_first' => 'datetime',
+        'upcoming_event_last'  => 'datetime',
+        'url'                  => 'string',
+        'slug_url'             => 'string',
+        'tevo_created_at'      => 'datetime',
+        'tevo_updated_at'      => 'datetime',
+        'tevo_deleted_at'      => 'datetime',
+        'created_at'           => 'datetime',
+        'updated_at'           => 'datetime',
+        'deleted_at'           => 'datetime',
     ];
 
 
     /**
      * Mutate the $result as necessary.
      * Be sure to run the parent::mutateApiResult() to get the common mutations.
-     *
-     * @param array $result
-     *
-     * @return array
      */
     protected static function mutateApiResult(array $result): array
     {
@@ -69,9 +72,7 @@ class Performer extends Model
         $result['venue_id'] = $result['venue']['id'] ?? null;
         unset($result['venue']);
 
-        $result['upcoming_event_first'] = Carbon::parse($result['upcoming_events']['first']) ?? null;
-        $result['upcoming_event_last'] = Carbon::parse($result['upcoming_events']['last']) ?? null;
-        unset($result['upcoming_events']);
+        $result = self::setUpcomingEvents($result);
 
         return $result;
     }
@@ -110,18 +111,5 @@ class Performer extends Model
     public function performance(): BelongsTo
     {
         return $this->belongsTo(Performance::class);
-    }
-
-
-    /**
-     * Mutator to nullify empty value.
-     */
-    public function setKeywordsAttribute($value): void
-    {
-        if (empty($value)) {
-            $this->attributes['keywords'] = null;
-        } else {
-            $this->attributes['keywords'] = $value;
-        }
     }
 }
