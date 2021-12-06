@@ -1,8 +1,8 @@
 {
-    "name": "laravel/laravel",
+    "name": "jwcobb/tevo-harvester",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "TEvo Harvester is a tool to populate your own local database tables with a cache of the Ticket Evolution API data.",
+    "keywords": ["ticket evolution", "api"],
     "license": "MIT",
     "require": {
         "php": "^8.0",
@@ -33,10 +33,7 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/"
-        },
-        "files": [
-            "app/Helpers/Common.php"
-        ]
+        }
     },
     "scripts": {
         "post-autoload-dump": [
