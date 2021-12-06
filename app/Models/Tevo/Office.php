@@ -145,6 +145,9 @@ class Office extends Model
             $result = self::setStreetAddress($result);
         }
 
+        $result['phone'] = (trim($result['phone']) === '') ? null : trim($result['phone']);
+        $result['fax'] = (trim($result['fax']) === '') ? null : trim($result['fax']);
+
         return $result;
     }
 
@@ -168,7 +171,7 @@ class Office extends Model
                 OfficeEmailAddress::withTrashed()->updateOrCreate(
                     [
                         'office_id'     => $office->id,
-                        'email_address' => $resultEmailAddress,
+                        'email_address' => strtolower(trim($resultEmailAddress)),
                     ],
                     [
                         'deleted_at' => null,

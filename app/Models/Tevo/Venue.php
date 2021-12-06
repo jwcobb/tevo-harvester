@@ -4,6 +4,7 @@ namespace App\Models\Tevo;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @mixin IdeHelperVenue
@@ -96,6 +97,27 @@ class Venue extends Model
         return $this->hasMany(Event::class);
     }
 
+    /**
+     * Get the real upcoming_first_event
+     */
+    public function upcomingFirstEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)->ofMany(['occurs_at' => 'min'], function ($query) {
+            $query->where('occurs_at', '>', now())->where('state', '=', 'shown');
+        });
+    }
+
+
+    /**
+     * Get the real upcoming_last_event
+     */
+    public function upcomingLastEvent(): HasOne
+    {
+        return $this->hasOne(Event::class)->ofMany(['occurs_at' => 'max'], function ($query) {
+            $query->where('occurs_at', '>', now())->where('state', '=', 'shown');
+        });
+    }
+
 
     /**
      * Mutate the $result as necessary.
@@ -117,7 +139,7 @@ class Venue extends Model
         $result = self::setUpcomingEvents($result);
 
 
-        // Aometimes popularity_score is NULL. Coerce those to zero
+        // Sometimes popularity_score is NULL. Coerce those to zero
         $result['popularity_score'] = $result['popularity_score'] ?? 0;
 
         return $result;

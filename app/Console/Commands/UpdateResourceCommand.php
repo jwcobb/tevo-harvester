@@ -128,7 +128,7 @@ class UpdateResourceCommand extends Command
         /**
          * The events/deleted endpoint returns a 422 Unprocessable Entity
          * {"error":"Invalid Parameters","message":"order_by is not allowed"}
-         * if an order_by is in the request.
+         * if an order_by is in the request so Ensure cursor pagination is not used.
          */
         if ($this->action !== 'deleted' && in_array($this->resource, self::USE_CURSOR_PAGINATION, true)) {
             foreach ($this->getItemsFromApiWithCursorPagination() as $result) {
@@ -238,8 +238,6 @@ class UpdateResourceCommand extends Command
                 $progressBar->start($lastPage);
             }
 
-            $progressBar->advance();
-
 
             foreach ($results[$this->harvest->resource] as $result) {
                 yield $result;
@@ -255,8 +253,8 @@ class UpdateResourceCommand extends Command
                  * is not paginated and would loop endlessly because "page" and "per_page" is ignored
                  * by the categories endpoint.
                  */
-                $thisPage = 0;
                 $progressBar->finish();
+                $thisPage = 0;
             } else {
                 ++$thisPage;
             }
@@ -324,9 +322,9 @@ class UpdateResourceCommand extends Command
              * Additionally, the categories resource is not paginated and
              * therefore will loop endlessly if we don’t forcibly exit.
              */
-            if ($results['total_entries'] < $results['per_page'] || empty($results[$this->harvest->resource])) {
-                $thisPage = 0;
+            if ($results['total_entries'] <= $results['per_page'] || empty($results[$this->harvest->resource])) {
                 $progressBar->finish();
+                $thisPage = 0;
             } else {
                 /**
                  * If the last result from the current page has the same updated_at
