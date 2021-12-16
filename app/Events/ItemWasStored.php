@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use Illuminate\Queue\SerializesModels;
-use App\Tevo\Model;
+use App\Models\Tevo\Model;
 
 class ItemWasStored extends Event
 {

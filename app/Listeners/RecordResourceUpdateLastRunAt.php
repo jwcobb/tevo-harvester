@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\ResourceUpdateWasCompleted;
-use App\Tevo\Harvest;
+use App\Models\Tevo\Harvest;
 
 class RecordResourceUpdateLastRunAt
 {

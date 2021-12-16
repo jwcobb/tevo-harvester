@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MarkPastEventsDeleted extends Command
 {
@@ -23,34 +24,24 @@ class MarkPastEventsDeleted extends Command
      */
     protected $description = 'Finds any events and performances that are in the past and soft-deletes them. This is intended to be run at 12:01AM.';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
-     * @throws Exception
      */
-    public function handle()
+    public function handle(): void
     {
         $now = new Carbon();
-        $endOfYesterday = new Carbon('midnight today');
-        $endOfYesterday->subSecond();
+        $endOfYesterday = Carbon::parse('midnight today')->subSecond();
 
-        $eventCounts = DB::table('events')->where('occurs_at', '<=', $endOfYesterday)->whereNull('deleted_at')->update(['deleted_at' => $now]);
-        $this->info($eventCounts . ' Events were soft-deleted.');
+        $eventCounts = DB::table('events')->where('occurs_at', '<=', $endOfYesterday)
+            ->whereNull('deleted_at')->update(['deleted_at' => $now]);
+        $this->info($eventCounts.' Events were soft-deleted.');
+        Log::info($eventCounts.' Events were soft-deleted.');
 
-        $performancesCounts = DB::table('performances')->where('occurs_at', '<=', $endOfYesterday)->whereNull('deleted_at')->update(['deleted_at' => $now]);
-        $this->info($performancesCounts . ' Performances were soft-deleted.');
+        $performancesCounts = DB::table('performances')->where('occurs_at', '<=', $endOfYesterday)
+            ->whereNull('deleted_at')->update(['deleted_at' => $now]);
+        $this->info($performancesCounts.' Performances were soft-deleted.');
+        Log::info($performancesCounts.' Performances were soft-deleted.');
 
     }
 }

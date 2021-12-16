@@ -3,36 +3,24 @@
 namespace App\Jobs;
 
 use App\Events\ResourceUpdateWasCompleted;
-use App\Tevo\Harvest;
-use Carbon\Carbon;
+use App\Models\Tevo\Harvest;
+use Illuminate\Support\Carbon;
 use TicketEvolution\Laravel\TEvoFacade as Tevo;
 
 class UpdateResourceJob extends Job
 {
 
-    /**
-     * @var
-     */
-    public $startTime;
+    public Carbon $startTime;
 
-    /**
-     * @var
-     */
-    public $harvest;
+    public Harvest $harvest;
 
-    /**
-     * @var
-     */
-    public $settings;
+    public array $settings;
 
 
     /**
      * Create a new job instance.
-     *
-     * @param Harvest $harvest
-     * @param         $settings
      */
-    public function __construct(Harvest $harvest, $settings)
+    public function __construct(Harvest $harvest, array $settings)
     {
         $this->harvest = $harvest;
         $this->settings = $settings;
@@ -41,32 +29,19 @@ class UpdateResourceJob extends Job
 
     /**
      * Execute the job.
-     *
-     * @param Tevo $apiClient
      */
-    public function handle(Tevo $apiClient)
+    public function handle(Tevo $apiClient): void
     {
-        /**
-         * Set a $startTime variable to record when we started this script. This time
-         * will be stored in the appropriate row of `harvests` so we know what
-         * time to use the next time this script runs.
-         */
-        $this->startTime = Carbon::now();
 
-        foreach ($this->getItemsFromApi($apiClient) as $result) {
-            $item = call_user_func($this->harvest->model_class . '::storeFromApi', $result);
-        }
 
         event(new ResourceUpdateWasCompleted($this->harvest, $this->startTime));
     }
 
 
     /**
-     * @param Tevo $apiClient
-     *
-     * @return \Generator
+     * Generator to return individual items from the API while paging through results.
      */
-    private function getItemsFromApi(Tevo $apiClient)
+    private function getItemsFromApi(Tevo $apiClient): ?\Generator
     {
         $thisPage = $this->settings['startPage'];
 
@@ -78,13 +53,14 @@ class UpdateResourceJob extends Job
             ];
 
             // "deleted" actions use "deleted_at" instead of "updated_at"
-            if ($this->harvest->action == 'deleted') {
+            if ($this->harvest->action === 'deleted') {
                 $options['deleted_at.gte'] = $options['updated_at.gte'];
                 unset($options['updated_at.gte']);
             }
 
             echo 'Fetching page ' . $thisPage . PHP_EOL;
             $results = $apiClient::{$this->harvest->library_method}($options);
+//            dd($results);
 
             $thisPage = (!empty($results[$this->harvest->resource])) ? ++$thisPage : false;
 
