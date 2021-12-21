@@ -14,92 +14,94 @@ class CreateTevoHarvestTables extends Migration
      */
     public function up()
     {
-//        Schema::create('brokerages', function (Blueprint $table) {
-//            $table->engine = 'MyISAM';
-//
-//            $table->id();
-//            $table->string('name', 100);
-//            $table->string('abbreviation', 100);
-//            $table->boolean('natb_member')->unsigned()->default(0);
-//            $table->text('logo')->nullable()->default(null);
-//
-//            $table->string('url', 150);
-//            $table->timestamp('tevo_created_at')->nullable()->default(null);
-//            $table->timestamp('tevo_updated_at')->nullable()->default(null);
-//            $table->timestamp('tevo_deleted_at')->nullable()->default(null);
-//            $table->timestamps();
-//            $table->softDeletes();
-//        });
-//        DB::statement('ALTER TABLE brokerages ADD FULLTEXT search(name, abbreviation)');
-//
-//
-//        Schema::create('offices', function (Blueprint $table) {
-//            $table->engine = 'MyISAM';
-//
-//            $table->id();
-//            $table->bigInteger('brokerage_id', false, true)->index();
-//            $table->foreign('brokerage_id')->references('id')->on('brokerages');
-//
-//            $table->string('name', 50);
-//            $table->boolean('main')->unsigned()->default(0);
-//
-//            $table->string('street_address', 100)->nullable()->default(null);
-//            $table->string('extended_address', 100)->nullable()->default(null);
-//            $table->string('locality', 50)->nullable()->default(null);
-//            $table->string('region', 50)->nullable()->default(null)->index();
-//            $table->string('postal_code', 20)->nullable()->default(null);
-//            $table->string('country_code', 2)->nullable()->default(null)->index();
-//            $table->decimal('latitude', 17, 14)->nullable()->default(null);
-//            $table->decimal('longitude', 17, 14)->nullable()->default(null);
-//
-//            $table->string('phone', 20)->nullable()->default(null);
-//            $table->string('fax', 20)->nullable()->default(null);
-//
-//            $table->boolean('po_box')->unsigned()->default(0);
-//            $table->string('time_zone', 30)->nullable()->default(null);
-//            $table->boolean('pos')->unsigned()->default(0);
-//            $table->boolean('evopay')->unsigned()->default(0);
-//            $table->decimal('evopay_discount', 4, 2)->unsigned()->default(0.00);
-//
-//            $table->string('url');
-//            $table->timestamp('fedex_pickup_dropoff_time')->nullable()->default(null);
-//            $table->timestamp('tevo_created_at')->nullable()->default(null);
-//            $table->timestamp('tevo_updated_at')->nullable()->default(null);
-//            $table->timestamp('tevo_deleted_at')->nullable()->default(null);
-//            $table->timestamps();
-//            $table->softDeletes();
-//        });
-//
-//
-//        Schema::create('office_email_addresses', function (Blueprint $table) {
-//            $table->engine = 'MyISAM';
-//
-//            $table->id();
-//            $table->bigInteger('office_id', false, true)->index();
-//            $table->foreign('office_id')->references('id')->on('offices');
-//
-//            $table->string('email_address');
-//
-//            $table->timestamps();
-//            $table->softDeletes();
-//        });
-//
-//
-//        Schema::create('office_hours', function (Blueprint $table) {
-//            $table->engine = 'MyISAM';
-//
-//            $table->id();
-//            $table->bigInteger('office_id', false, true)->index();
-//            $table->foreign('office_id')->references('id')->on('offices');
-//
-//            $table->tinyInteger('day_of_week');
-//            $table->boolean('closed')->unsigned()->default(0);
-//            $table->time('open');
-//            $table->time('close');
-//
-//            $table->timestamps();
-//            $table->softDeletes();
-//        });
+        if (env('CREATE_BROKERAGES_OFFICES', false)) {
+            Schema::create('brokerages', function (Blueprint $table) {
+                $table->engine = 'MyISAM';
+
+                $table->id();
+                $table->string('name', 100);
+                $table->string('abbreviation', 100);
+                $table->boolean('natb_member')->unsigned()->default(0);
+                $table->text('logo')->nullable()->default(null);
+
+                $table->string('url', 150);
+                $table->timestamp('tevo_created_at')->nullable()->default(null);
+                $table->timestamp('tevo_updated_at')->nullable()->default(null);
+                $table->timestamp('tevo_deleted_at')->nullable()->default(null);
+                $table->timestamps();
+                $table->softDeletes();
+            });
+            DB::statement('ALTER TABLE brokerages ADD FULLTEXT search(name, abbreviation)');
+
+
+            Schema::create('offices', function (Blueprint $table) {
+                $table->engine = 'MyISAM';
+
+                $table->id();
+                $table->bigInteger('brokerage_id', false, true)->index();
+                $table->foreign('brokerage_id')->references('id')->on('brokerages');
+
+                $table->string('name', 50);
+                $table->boolean('main')->unsigned()->default(0);
+
+                $table->string('street_address', 100)->nullable()->default(null);
+                $table->string('extended_address', 100)->nullable()->default(null);
+                $table->string('locality', 50)->nullable()->default(null);
+                $table->string('region', 50)->nullable()->default(null)->index();
+                $table->string('postal_code', 20)->nullable()->default(null);
+                $table->string('country_code', 2)->nullable()->default(null)->index();
+                $table->decimal('latitude', 17, 14)->nullable()->default(null);
+                $table->decimal('longitude', 17, 14)->nullable()->default(null);
+
+                $table->string('phone', 20)->nullable()->default(null);
+                $table->string('fax', 20)->nullable()->default(null);
+
+                $table->boolean('po_box')->unsigned()->default(0);
+                $table->string('time_zone', 30)->nullable()->default(null);
+                $table->boolean('pos')->unsigned()->default(0);
+                $table->boolean('evopay')->unsigned()->default(0);
+                $table->decimal('evopay_discount', 4, 2)->unsigned()->default(0.00);
+
+                $table->string('url');
+                $table->timestamp('fedex_pickup_dropoff_time')->nullable()->default(null);
+                $table->timestamp('tevo_created_at')->nullable()->default(null);
+                $table->timestamp('tevo_updated_at')->nullable()->default(null);
+                $table->timestamp('tevo_deleted_at')->nullable()->default(null);
+                $table->timestamps();
+                $table->softDeletes();
+            });
+
+
+            Schema::create('office_email_addresses', function (Blueprint $table) {
+                $table->engine = 'MyISAM';
+
+                $table->id();
+                $table->bigInteger('office_id', false, true)->index();
+                $table->foreign('office_id')->references('id')->on('offices');
+
+                $table->string('email_address');
+
+                $table->timestamps();
+                $table->softDeletes();
+            });
+
+
+            Schema::create('office_hours', function (Blueprint $table) {
+                $table->engine = 'MyISAM';
+
+                $table->id();
+                $table->bigInteger('office_id', false, true)->index();
+                $table->foreign('office_id')->references('id')->on('offices');
+
+                $table->tinyInteger('day_of_week');
+                $table->boolean('closed')->unsigned()->default(0);
+                $table->time('open');
+                $table->time('close');
+
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
 
 
         Schema::create('categories', function (Blueprint $table) {
@@ -160,7 +162,7 @@ class CreateTevoHarvestTables extends Migration
 
             $table->id();
             $table->bigInteger('venue_id', false, true)->index();
-            $table->foreign('venue_id')->references('id') ->on('venues');
+            $table->foreign('venue_id')->references('id')->on('venues');
 
             $table->string('name', 100)->index();
             $table->boolean('primary')->unsigned()->default(0);
@@ -277,19 +279,35 @@ class CreateTevoHarvestTables extends Migration
 
             $table->timestamps();
         });
+        if (env('CREATE_BROKERAGES_OFFICES', false)) {
+            DB::table('harvests')->insert([
+                [
+                    'resource'                   => 'brokerages',
+                    'action'                     => 'active',
+                    'library_method'             => 'listBrokerages',
+                    'model_class'                => \App\Models\Tevo\Brokerage::class,
+                    'scheduler_frequency_method' => 'twiceDaily',
+                    'ping_before_url'            => null,
+                    'then_ping_url'              => null,
+                    'last_run_at'                => null,
+                    'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                    'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                ],
+                [
+                    'resource'                   => 'offices',
+                    'action'                     => 'active',
+                    'library_method'             => 'listOffices',
+                    'model_class'                => \App\Models\Tevo\Office::class,
+                    'scheduler_frequency_method' => 'twiceDaily',
+                    'ping_before_url'            => null,
+                    'then_ping_url'              => null,
+                    'last_run_at'                => null,
+                    'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                    'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
+                ],
+            ]);
+        }
         DB::table('harvests')->insert([
-//            [
-//                'resource'                   => 'brokerages',
-//                'action'                     => 'active',
-//                'library_method'             => 'listBrokerages',
-//                'model_class'                => \App\Models\Tevo\Brokerage::class,
-//                'scheduler_frequency_method' => 'twiceDaily',
-//                'ping_before_url'            => null,
-//                'then_ping_url'              => null,
-//                'last_run_at'                => null,
-//                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
-//                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
-//            ],
             [
                 'resource'                   => 'categories',
                 'action'                     => 'active',
@@ -350,18 +368,6 @@ class CreateTevoHarvestTables extends Migration
                 'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
                 'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
             ],
-//            [
-//                'resource'                   => 'offices',
-//                'action'                     => 'active',
-//                'library_method'             => 'listOffices',
-//                'model_class'                => \App\Models\Tevo\Office::class,
-//                'scheduler_frequency_method' => 'twiceDaily',
-//                'ping_before_url'            => null,
-//                'then_ping_url'              => null,
-//                'last_run_at'                => null,
-//                'created_at'                 => DB::raw('CURRENT_TIMESTAMP'),
-//                'updated_at'                 => DB::raw('CURRENT_TIMESTAMP'),
-//            ],
             [
                 'resource'                   => 'performers',
                 'action'                     => 'active',
